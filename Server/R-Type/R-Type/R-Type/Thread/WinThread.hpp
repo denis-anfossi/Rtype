@@ -1,15 +1,13 @@
 #ifndef		WIN_THREAD_HPP
 #define		WIN_THREAD_HPP
 
-#ifndef		WIN_THREAD_HPP
-#endif		WIN_THREAD_HPP
-
 #include	"IThread.hpp"
 #include	"WinMutex.hpp"
-#include	<windows.h>
 
 #ifdef __linux__
 #else
+
+#include	<windows.h>
 
 class		WinThread : public IThread
 {
@@ -29,6 +27,6 @@ private:
   HANDLE	thread;
 };
 
-#endif		/* WIN32 */
+#endif
 
 #endif		/* WIN_THREAD_HPP */

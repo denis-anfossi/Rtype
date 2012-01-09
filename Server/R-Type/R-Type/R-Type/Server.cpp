@@ -3,9 +3,9 @@
 Server::Server(void)
 { 
 #ifdef	__linux__
-	socket = new UnixSocket();
+  socket = new UnixSocket();
 #else
-	socket = new WinSocket();
+  socket = new WinSocket();
 #endif
 }
 
@@ -41,13 +41,14 @@ void	Server::addNewPlayer(const struct sockaddr_in rcv)
 
 Player	*Server::getPlayer(const struct sockaddr_in rcv)
 {
-	for (std::vector<Player *>::iterator it = players.begin(); it != players.end(); ++it)
-	{
-		Player *p = *it;
-		if (p->getSockaddr().sin_addr.S_un.S_addr == rcv.sin_addr.S_un.S_addr && p->getSockaddr().sin_port == rcv.sin_port)
-			return p;
-	}
-	return 0;
+  for (std::vector<Player *>::iterator it = players.begin(); it != players.end(); ++it)
+    {
+      Player *p = *it;
+      uint32_t u = p->getSockaddr().sin_addr.s_addr;
+      if (p->getSockaddr().sin_addr.s_addr == rcv.sin_addr.s_addr && p->getSockaddr().sin_port == rcv.sin_port)
+	return p;
+    }
+  return 0;
 }
 
 void	Server::deletePlayer(const Player *p)

@@ -2,9 +2,9 @@
 #define    RECEIVE_HPP
 
 #ifdef __linux__
+#include <netinet/in.h>
 #else
 #include <winsock2.h>
-
 #endif		/* __linux__ */
 
 struct		receive

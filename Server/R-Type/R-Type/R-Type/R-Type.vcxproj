@@ -40,9 +40,6 @@
     <ClCompile Include="Thread\WinMutex.cpp" />
     <ClCompile Include="Thread\WinThread.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{EB8A70F6-E033-48B1-AA92-BA2CF3343741}</ProjectGuid>
     <RootNamespace>RType</RootNamespace>

@@ -10,6 +10,7 @@
 #include <sys/types.h> 
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <stdio.h>
 
 class      UnixSocket : public ISocket
@@ -22,7 +23,7 @@ public:
 	~UnixSocket();
 
   virtual bool CreateSocket(int domain, int type, int protocol);
-  virtual bool BindSocket(int family, int port, std::string inet_addr);
+  virtual bool BindSocket(int family, int port);
   virtual receive RecvData(int len, int flags);
   virtual bool SendData(std::string ip, int port, char *buf, int len, int flags);
 };

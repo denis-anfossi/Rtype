@@ -23,7 +23,7 @@ bool     UnixSocket::BindSocket(int family, int port)
    sockad.sin_family = family;
    sockad.sin_port = htons(port);
    sockad.sin_addr.s_addr = htonl(INADDR_ANY);
-   len = sizeof(sockaddress);
+   len = sizeof(sockad);
    if(bind(socket_, (struct sockaddr*)&sockad, len) < 0)
 	 return false;
    return true;
@@ -34,7 +34,7 @@ receive     UnixSocket::RecvData(int len, int flags)
   int    check;
   char   *buffer = new char[len];
   struct sockaddr_in addr_;
-  int    sizeaddr = sizeof(addr_);
+  socklen_t sizeaddr = sizeof(addr_);
   receive   rcv;
 
   check = recvfrom(socket_, buffer, len, flags, (struct sockaddr*) &addr_, &sizeaddr);
@@ -53,7 +53,7 @@ bool     UnixSocket::SendData(std::string ip, int port, char *buf, int len, int 
   addr_.sin_addr.s_addr = inet_addr(ip.c_str());
   addr_.sin_port = htons(port);
   check = sendto(socket_, buf, len, flags, (struct sockaddr*) &addr_, sizeof(addr_));
-  if (check == SOCKET_ERROR)
+  if (check == -1)
 	return false;
   return true;
 }
