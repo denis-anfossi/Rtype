@@ -52,13 +52,14 @@ receive     WinSocket::RecvData(int len, int flags)
   return rcv;
 }
 
-bool     WinSocket::SendData(std::string ip, int port, char *buf, int len, int flags)
+bool     WinSocket::SendData(in_addr ip, int port, char *buf, int len, int flags)
 {
   int    check;
   struct sockaddr_in addr_;
 
   addr_.sin_family = AF_INET;
-  addr_.sin_addr.s_addr = inet_addr(ip.c_str());
+  addr_.sin_addr = ip;
+//  addr_.sin_addr.s_addr = inet_addr(ip.c_str());
   addr_.sin_port = htons(port);
   check = sendto(socket_, buf, len, flags, (struct sockaddr*) &addr_, sizeof(addr_));
   if (check == SOCKET_ERROR)

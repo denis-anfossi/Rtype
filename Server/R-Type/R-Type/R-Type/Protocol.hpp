@@ -1,12 +1,13 @@
 #ifndef		_PROTOCOL_HPP_
 #define		_PROTOCOL_HPP_
 
-#ifdef __linux__
-#include <inttypes.h>
-#else
-typedef unsigned char uint8_t;
-typedef int int32_t;
-#endif
+//#ifdef __linux__
+//#include <inttypes.h>
+//else
+#include <stdint.h>
+//typedef unsigned char uint8_t;
+//typedef int int32_t;
+//#endif
 
 namespace RTProtocol
 {

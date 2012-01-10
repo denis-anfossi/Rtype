@@ -10,6 +10,7 @@ public:
 	Player(const struct sockaddr_in _rcv);
 	~Player(void);
 
+	void	setId(int id);
 	void	setId(RTProtocol::Identifier _id);
 	void	setIdGame(int _idGame);
 	const struct sockaddr_in	getSockaddr(void) const;

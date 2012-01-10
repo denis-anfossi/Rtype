@@ -22,7 +22,7 @@ public:
   virtual bool CreateSocket(int domain, int type, int protocol);
   virtual bool BindSocket(int family, int port);
   virtual receive RecvData(int len, int flags);
-  virtual bool SendData(std::string ip, int port, char *buf, int len, int flags);
+  virtual bool SendData(in_addr ip, int port, char *buf, int len, int flags);
 };
 #endif
 

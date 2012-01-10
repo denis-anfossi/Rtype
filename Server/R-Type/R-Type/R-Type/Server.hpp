@@ -26,9 +26,13 @@ public:
 	void	running(void);
 
 	void	addNewPlayer(const struct sockaddr_in rcv);
-	Player	*getPlayer(const struct sockaddr_in rcv);
-	void	deletePlayer(const Player *p);
 	void	addNewGame(void);
+	Player	*getPlayer(const struct sockaddr_in rcv) const;
+	Game	*getGame(void) const;
+	Game	*getGame(const Player *p) const;
+	Game	*getAvailableSlot(void) const;
+	ISocket	*getSocket(void) const;
+	void	deletePlayer(const Player *p);
 	void	deleteGame(const Game *g);
 
 private:

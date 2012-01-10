@@ -23,6 +23,18 @@ void	Game::setPlayer(Player *_player, int id)
 		player4 = _player;
 }
 
+void	Game::setPlayer(Player *_player, RTProtocol::Identifier id)
+{
+	if (id.Id == RTProtocol::PLAYER_1)
+		player1 = _player;
+	else if (id.Id == RTProtocol::PLAYER_2)
+		player2 = _player;
+	else if (id.Id == RTProtocol::PLAYER_3)
+		player3 = _player;
+	else if (id.Id == RTProtocol::PLAYER_4)
+		player4 = _player;
+}
+
 int		Game::getId(void) const
 {
 	return id;
@@ -39,4 +51,17 @@ Player	*Game::getPlayer(int id) const
 	else if (id == 3)
 		return player4;
 	return 0;
+}
+
+int		Game::getEmptySlot() const
+{
+	if (player1 == 0)
+		return (0);
+	else if (player2 == 0)
+		return (1);
+	else if (player3 == 0)
+		return (2);
+	else if (player4 == 0)
+		return (3);
+	return (-1);
 }

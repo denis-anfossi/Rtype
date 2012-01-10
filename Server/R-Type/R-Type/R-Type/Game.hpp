@@ -11,8 +11,10 @@ public:
 
 	void	setId(int _id);
 	void	setPlayer(Player *_player, int id);
+	void	setPlayer(Player *_player, RTProtocol::Identifier id);
 	int		getId(void) const;
 	Player	*getPlayer(int id) const;
+	int		getEmptySlot() const;
 private:
 	int		id;
 	Player	*player1;
