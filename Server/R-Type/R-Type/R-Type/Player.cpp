@@ -1,9 +1,7 @@
 #include "Player.hpp"
 
 Player::Player(const struct sockaddr_in _rcv): rcv(_rcv), idGame(-1)
-{ 
-	RTProtocol::Identifier	id;
-
+{
 	id.Id = RTProtocol::NO_PLAY;
 }
 

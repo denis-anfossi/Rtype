@@ -47,6 +47,7 @@ void	Command::RecvConnectionLogOut(const struct sockaddr_in& rcv)
 				SendConnection(s->getPlayer(rcv), RTProtocol::LOG_OUT);
 		s->getGame(s->getPlayer(rcv))->setPlayer(0, s->getPlayer(rcv)->getId());
     }
+  SendConnection(s->getPlayer(rcv), RTProtocol::LOG_OUT);
   s->deletePlayer(s->getPlayer(rcv));
 }
 
@@ -85,7 +86,6 @@ void	Command::RecvRunModeJoin(const struct sockaddr_in& rcv)
 		  if (s->getGame(s->getPlayer(rcv))->getPlayer(i) != 0 && s->getGame(s->getPlayer(rcv))->getPlayer(i)->getId().Id != s->getPlayer(rcv)->getId().Id)
 			  SendIdentifier(s->getGame(s->getPlayer(rcv))->getPlayer(i), s->getPlayer(rcv)->getId().Id);
 	  SendGameState(s->getPlayer(rcv), RTProtocol::END);
-	  // Send Actual Position of others clients
   }
   else
   {
@@ -100,6 +100,8 @@ void	Command::RecvGameAction(const receive& rBody)
 
 void	Command::SendConnection(const Player *p, const uint8_t state)
 {
+	std::cout << "SendConnection" << std::endl;
+
 	char	*send;
 	RTProtocol::Connection c;
 
@@ -111,6 +113,8 @@ void	Command::SendConnection(const Player *p, const uint8_t state)
 
 void	Command::SendIdentifier(const Player *p, const uint8_t id)
 {
+	std::cout << "SendIdentifier" << std::endl;
+
 	char	*send;
 	RTProtocol::Identifier i;
 
@@ -122,6 +126,8 @@ void	Command::SendIdentifier(const Player *p, const uint8_t id)
 
 void	Command::SendGameState(const Player *p, const uint8_t state)
 {
+	std::cout << "SendGameState" << std::endl;
+
 	char	*send;
 	RTProtocol::GameState g;
 
@@ -133,6 +139,8 @@ void	Command::SendGameState(const Player *p, const uint8_t state)
 
 char	*Command::getNewHeader(uint8_t command, int32_t size)
 {
+	std::cout << "getNewHeader" << std::endl;
+
 	RTProtocol::Header	h;
 
 	h.Command = command;

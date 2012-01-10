@@ -25,7 +25,7 @@ private:
 	void	SendConnection(const Player *p, const uint8_t state);
 	void	SendIdentifier(const Player *p, const uint8_t id);
 	void	SendGameState(const Player *p, const uint8_t state);
-	void	SendGameAction(const Player *p, );
+	void	SendGameAction();
 
 	void	SendGame();
 	void	SendGameNew();
