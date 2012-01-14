@@ -10,8 +10,9 @@
 class LinuxDynLib : public IDynLib
 {
 private:
+  //int flagOpen;
   void* HandleOpen;
-  std::wstring libName;
+  std::string libName;
   std::string SymbolName;
 public:
   LinuxDynLib();
@@ -20,9 +21,11 @@ public:
   virtual void* dlSymb();
   virtual int closeLib();
   virtual char* errorLib();
+  //int getflagOpen();
+  //void setflagOpen(int);
   void* getHandleOpen();
   void setHandleOpen(void*);
-  std::wstring getlibName();
+  std::string getlibName();
   void setlibName(std::string);
   std::string getSymbolName();
   void setSymbolName(std::string);

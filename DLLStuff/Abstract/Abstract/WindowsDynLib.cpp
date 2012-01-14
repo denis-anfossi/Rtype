@@ -1,4 +1,3 @@
-#ifdef WIN32
 #include "WindowsDynLib.hpp"
 #include <Windows.h>
 
@@ -9,11 +8,12 @@ std::copy(s.begin(), s.end(), temp.begin());
 return temp; 
 }
 
+
 std::string WStringToString(const std::wstring& s)
 {
 std::string temp(s.length(), ' ');
 std::copy(s.begin(), s.end(), temp.begin());
-return temp;
+return temp; 
 }
 
 WindowsDynLib::WindowsDynLib()
@@ -69,4 +69,3 @@ void* WindowsDynLib::openLib()
   {
 	  return HandleOpen;
   }
-#endif

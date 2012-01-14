@@ -14,8 +14,8 @@ extern "C"
       std::cout << "DLL Called!" << std::endl;
    }
 
-   void DECLDIR *getInstanceDLL()
+   void DECLDIR *getInstanceDLL(int X, int Y)
    {
-	   return static_cast<void*> (new Test);
+	   return static_cast<void*> (new MonsterFirstType(X, Y));
    }
 }
