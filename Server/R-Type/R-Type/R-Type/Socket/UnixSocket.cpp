@@ -51,7 +51,7 @@ bool     UnixSocket::SendData(in_addr ip, int port, char *buf, int len, int flag
 
   addr_.sin_family = AF_INET;
   addr_.sin_addr = ip;
-  addr_.sin_port = htons(port);
+  addr_.sin_port = port;
   check = sendto(socket_, buf, len, flags, (struct sockaddr*) &addr_, sizeof(addr_));
   if (check == -1)
 	return false;
