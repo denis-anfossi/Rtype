@@ -8,7 +8,7 @@ private:
 	int16_t _X;
 	int16_t _Y;
 public:
-	Monster(int X, int Y);
+	Monster(int16_t X, int16_t Y);
 	virtual ~Monster();
 
 	

@@ -34,6 +34,5 @@ uint8_t MonsterFirstType::getWidth()
 
 void MonsterFirstType::move()
 {
-	setX(100);
-	setY(100);
+	setX(getX()-1);
 }

@@ -9,7 +9,7 @@ Monster::Monster(int16_t X, int16_t Y)
 Monster::~Monster()
 {}
 
-uint8_t Monster::getX()
+int16_t Monster::getX()
 {
 	return _X;
 }
@@ -19,7 +19,7 @@ void Monster::setX(int16_t X)
 	_X = X;
 }
 
-uint8_t Monster::getY()
+int16_t Monster::getY()
 {
 	return _Y;
 }
