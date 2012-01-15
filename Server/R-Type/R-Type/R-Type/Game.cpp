@@ -1,10 +1,25 @@
 #include "Game.hpp"
 
 Game::Game(Player *p, int id): id(id), player1(p), player2(0), player3(0), player4(0)
-{ }
+{
+#ifdef __linux__
+	sharedLib = new LinuxDynLib();
+#else
+	sharedLib = new WindowsDynLib();
+#endif
+/*	
+	addMonster(RTProtocol::MONSTER_TYPE1);
+	if (monsters.size() > 0)
+		std::cout << monsters[0]->getX() << std::endl;
+*/
+}
 
 Game::~Game(void)
-{ }
+{
+	for (unsigned int i = 0; i < monsters.size(); ++i)
+		delete monsters[i];
+	delete sharedLib;
+}
 
 void	Game::setId(int _id)
 {
@@ -35,6 +50,36 @@ void	Game::setPlayer(Player *_player, RTProtocol::Identifier id)
 		player4 = _player;
 }
 
+void	Game::addMonster(RTProtocol::MONSTER_TYPE type)
+{
+	std::string	libName;
+	if (type == RTProtocol::MONSTER_TYPE1)
+		libName = "DLL/CreateMonsterFirstTypeDLL";
+	else if (type == RTProtocol::MONSTER_TYPE2)
+		libName = "DLL/CreateMonsterFirstTypeDLL";
+
+#ifdef __linux__
+	libName += ".so";
+#else
+	libName += ".dll";
+#endif
+
+	IMonster	*(*external_creator)(int, int);
+
+	if (sharedLib->openLib(libName) != NULL)
+	{
+		sharedLib->setSymbolName("getInstanceDLL");
+		external_creator = reinterpret_cast<IMonster *	(*)(int, int)>(sharedLib->dlSymb());
+		monsters.push_back(external_creator(100, 100));
+		sharedLib->closeLib();
+	}
+}
+
+void	Game::deleteMonster(int id)
+{
+
+}
+
 int		Game::getId(void) const
 {
 	return id;
@@ -53,12 +98,12 @@ Player	*Game::getPlayer(int id) const
 	return 0;
 }
 
-Monster	*Game::getMonster(int id) const
+IMonster	*Game::getMonster(int id) const
 {
 	return monsters[id];
 }
 
-std::vector<Monster *>	Game::getMonsters(void) const
+std::vector<IMonster *>	Game::getMonsters(void) const
 {
 	return monsters;
 }

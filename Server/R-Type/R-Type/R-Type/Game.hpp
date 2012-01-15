@@ -1,8 +1,13 @@
 #ifndef		GAME_HPP
 #define		GAME_HPP
 
+#ifdef __linux__
+#include	"DLL\LinuxDynLib.hpp"
+#else
+#include	"DLL\WindowsDynLib.hpp"
+#endif
 #include	"Player.hpp"
-#include	"DLL/Monster.h"
+#include	"DLL/IMonster.hpp"
 #include	<vector>
 
 class Game
@@ -14,10 +19,12 @@ public:
 	void	setId(int _id);
 	void	setPlayer(Player *_player, int id);
 	void	setPlayer(Player *_player, RTProtocol::Identifier id);
+	void	addMonster(RTProtocol::MONSTER_TYPE type);
+	void	deleteMonster(int id);
 	int		getId(void) const;
 	Player	*getPlayer(int id) const;
-	Monster	*getMonster(int id) const;
-	std::vector<Monster *>	getMonsters(void) const;
+	IMonster	*getMonster(int id) const;
+	std::vector<IMonster *>	getMonsters(void) const;
 	int		getEmptySlot() const;
 private:
 	int		id;
@@ -25,7 +32,8 @@ private:
 	Player	*player2;
 	Player	*player3;
 	Player	*player4;
-	std::vector<Monster *>	monsters;
+	std::vector<IMonster *>	monsters;
+	IDynLib	*sharedLib;
 };
 
 #endif		/* GAME_HPP */

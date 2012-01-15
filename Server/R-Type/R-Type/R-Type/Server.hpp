@@ -45,13 +45,13 @@ public:
 	static void		kill(void);
 
 	IMutex		*playersMutex;
+	IMutex		*serverMutex;
 private:
 	Server(void);
 	~Server(void);
 
 	static Server	*_singleton;
 
-	IMutex		*serverMutex;
 	ThreadPool_	*threadPool;
 	ISocket		*socket;
 	std::vector<Player *>	players;

@@ -75,10 +75,13 @@ void	Server::running(void)
 		receive rHeader = socket->RecvData(sizeof(RTProtocol::Header), MSG_PEEK);
 		h = reinterpret_cast<RTProtocol::Header *>(rHeader.data_);
 		receive rBody = socket->RecvData(h->Size, 0);
-		_command	*recv = new _command();
-		recv->h = h;
-		recv->r = rBody;
-		threadPool->QueuePush(Command::FindCommand, recv);
+		if (rBody.data_ != NULL)
+		{
+			_command	*recv = new _command();
+			recv->h = h;
+			recv->r = rBody;
+			threadPool->QueuePush(Command::FindCommand, recv);
+		}
 	}
 }
 
@@ -98,7 +101,7 @@ void	Server::checkConnectionClients(void *param)
 			if (s->getPlayer(i)->getConnect() == true)
 			{
 				s->getPlayer(i)->setConnect(false);
-				c->SendConnection(s->getPlayer(i), RTProtocol::CHECK);
+//				c->SendConnection(s->getPlayer(i), RTProtocol::CHECK);
 			}
 			else if (s->getPlayer(i)->getIdGame() != -1)
 			{
@@ -110,9 +113,9 @@ void	Server::checkConnectionClients(void *param)
 			s->deletePlayer(s->getPlayer(i));
 		}
 #ifdef __linux__
-		sleep(30);
+		sleep(32);
 #else
-		Sleep(30000);
+		Sleep(32000);
 #endif
 	}
 }
@@ -133,7 +136,6 @@ void	Server::sendUpdateClients(void *param)
 			if (s->getPlayer(i)->getIdGame() != -1)
 				c->SendGameData(s->getPlayer(i));
 		}
-		Sleep(10);
 		gettimeofday(&diff, NULL);
 		diff.tv_sec = diff.tv_sec - now.tv_sec;
 		if (diff.tv_sec > 0)

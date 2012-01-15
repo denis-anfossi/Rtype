@@ -39,16 +39,23 @@ bool     WinSocket::BindSocket(int family, int port)
 
 receive     WinSocket::RecvData(int len, int flags)
 {
-  int    check;
-  char   *buffer = new char[len];
-  struct sockaddr_in addr_;
-  int    sizeaddr = sizeof(addr_);
-  receive   rcv;
+	receive   rcv;
+	if (len > 0)
+	{
+		int    check;
+		char   *buffer = new char[len];
+		struct sockaddr_in addr_;
+		int    sizeaddr = sizeof(addr_);
 
-  check = recvfrom(socket_, buffer, len, flags, (struct sockaddr*) &addr_, &sizeaddr);
-  buffer[check] = 0;
-  rcv.data_ = buffer;
-  rcv.s_rcv = addr_;
+		check = recvfrom(socket_, buffer, len, flags, (struct sockaddr*) &addr_, &sizeaddr);
+		buffer[check] = 0;
+		rcv.data_ = buffer;
+		rcv.s_rcv = addr_;
+  }
+  else
+  {
+	rcv.data_ = NULL;
+  }
   return rcv;
 }
 

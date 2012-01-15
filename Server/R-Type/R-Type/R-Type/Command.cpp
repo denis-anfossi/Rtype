@@ -23,21 +23,7 @@ Command::Command(void)
 
 Command::~Command(void)
 { }
-/*
-void	Command::Test(void *param)
-{
-	_command *recv = reinterpret_cast<_command *>(param);
-	Command *c = Command::getInstance();
-//	c->FindCommand(recv->h, recv->r);
 
-  if (recv->h->Command == RTProtocol::CONNECTION)
-    c->RecvConnection(recv->r);
-  else if (recv->h->Command == RTProtocol::RUN_MODE)
-    c->RecvRunMode(recv->r);
-  else if (recv->h->Command == RTProtocol::GAME_ACTION)
-    c->RecvGameAction(recv->r);
-}
-*/
 void	Command::FindCommand(void *param)
 {
 	std::cout << "FindCommand" << std::endl;
@@ -62,6 +48,8 @@ void	Command::RecvConnection(const receive &rBody)
     RecvConnectionLogIn(rBody.s_rcv);
   else if (h->StateConnection == RTProtocol::LOG_OUT)
     RecvConnectionLogOut(rBody.s_rcv);
+  else if (h->StateConnection == RTProtocol::CHECK)
+    RecvConnectionCheck(rBody.s_rcv);
 }
 
 void	Command::RecvConnectionLogIn(const struct sockaddr_in& rcv)
@@ -73,7 +61,6 @@ void	Command::RecvConnectionLogIn(const struct sockaddr_in& rcv)
 	if (s->getPlayer(rcv) == 0)
 	{
 		s->addNewPlayer(rcv);
-		std::cout << (int)s->getPlayer(rcv)->getConnect() << " ID: " << (int)s->getPlayer(rcv)->getId().Id << " IDG" << (int)s->getPlayer(rcv)->getIdGame() << std::endl;
 		SendConnection(s->getPlayer(rcv), RTProtocol::LOG_IN);
 	}
 }
@@ -124,8 +111,11 @@ void	Command::RecvRunModeCreate(const struct sockaddr_in& rcv)
 
 	Server *s = Server::getInstance();
 
-	s->addNewGame(s->getPlayer(rcv), s->getAvailableId());
-	SendGameState(s->getPlayer(rcv), RTProtocol::START);
+	if (s->getPlayer(rcv)->getIdGame() == -1)
+	{
+		s->addNewGame(s->getPlayer(rcv), s->getAvailableId());
+		SendGameState(s->getPlayer(rcv), RTProtocol::START);
+	}
 }
 
 void	Command::RecvRunModeJoin(const struct sockaddr_in& rcv)
@@ -134,15 +124,20 @@ void	Command::RecvRunModeJoin(const struct sockaddr_in& rcv)
 
 	Server *s = Server::getInstance();
 
-	if (s->getAvailableSlot() != 0)
+	if (s->getPlayer(rcv)->getIdGame() == -1)
 	{
-		s->getPlayer(rcv)->setId(s->getAvailableSlot()->getEmptySlot());
-		s->getPlayer(rcv)->setIdGame(s->getAvailableSlot()->getId());
-		s->getAvailableSlot()->setPlayer(s->getPlayer(rcv), s->getAvailableSlot()->getEmptySlot());
-		SendGameState(s->getPlayer(rcv), RTProtocol::START);
+		if (s->getAvailableSlot() != 0)
+		{
+			s->getPlayer(rcv)->setId(s->getAvailableSlot()->getEmptySlot());
+			s->getPlayer(rcv)->setIdGame(s->getAvailableSlot()->getId());
+			s->getAvailableSlot()->setPlayer(s->getPlayer(rcv), s->getAvailableSlot()->getEmptySlot());
+			SendGameState(s->getPlayer(rcv), RTProtocol::START);
+		}
+		else
+		{
+			RecvRunModeCreate(rcv);
+		}
 	}
-	else
-		RecvRunModeCreate(rcv);
 }
 
 void	Command::RecvGameAction(const receive& rBody)
@@ -151,16 +146,86 @@ void	Command::RecvGameAction(const receive& rBody)
 
 	Server *s = Server::getInstance();
 	RTProtocol::GameAction	*h = reinterpret_cast<RTProtocol::GameAction *>(rBody.data_ + sizeof(RTProtocol::Header));
-	s->playersMutex->lock();
-	if (h->Action == RTProtocol::UP)
-		s->getPlayer(rBody.s_rcv)->setY(s->getPlayer(rBody.s_rcv)->getY() - 1);
+//	s->playersMutex->lock();
+	s->serverMutex->lock();
+	if (s->getPlayer(rBody.s_rcv)->getIdGame() != -1)
+	{
+	int coord = 0;
+	if (h->Action == RTProtocol::UP && isNoUpCollision(rBody.s_rcv) == true)
+		s->getPlayer(rBody.s_rcv)->setY((coord = s->getPlayer(rBody.s_rcv)->getY()) - 1);
 	else if (h->Action == RTProtocol::DOWN)
-		s->getPlayer(rBody.s_rcv)->setY(s->getPlayer(rBody.s_rcv)->getY() + 1);
-	else if (h->Action == RTProtocol::LEFT && s->getPlayer(rBody.s_rcv)->getX() >= 0)
-		s->getPlayer(rBody.s_rcv)->setX(s->getPlayer(rBody.s_rcv)->getX() - 1);
-	else if (h->Action == RTProtocol::RIGHT && s->getPlayer(rBody.s_rcv)->getX() <= 800)
-		s->getPlayer(rBody.s_rcv)->setX(s->getPlayer(rBody.s_rcv)->getX() + 1);
-	s->playersMutex->unlock();
+		s->getPlayer(rBody.s_rcv)->setY(coord + 1);
+	else if (h->Action == RTProtocol::LEFT && (coord = s->getPlayer(rBody.s_rcv)->getX()) >= 0 + 55)
+		s->getPlayer(rBody.s_rcv)->setX(coord - 1);
+	else if (h->Action == RTProtocol::RIGHT && coord <= 800)
+		s->getPlayer(rBody.s_rcv)->setX(coord + 1);
+	}
+	s->serverMutex->unlock();
+//	s->playersMutex->unlock();
+}
+
+bool	Command::isNoUpCollision(const struct sockaddr_in& rcv)
+{
+	Server *s = Server::getInstance();
+	int	y;
+
+	y = s->getPlayer(rcv)->getY();
+	for (int i = 0; i < 4; ++i)
+	{
+		Player *p = s->getGame(s->getPlayer(rcv))->getPlayer(i);
+		if (p != s->getPlayer(rcv))
+			if ((y + 1) >= (p->getY() - 55))
+				return false;
+	}
+	return true;
+}
+
+bool	Command::isNoDownCollision(const struct sockaddr_in& rcv)
+{
+	Server *s = Server::getInstance();
+	int	y;
+
+	y = s->getPlayer(rcv)->getY();
+	for (int i = 0; i < 4; ++i)
+	{
+		Player *p = s->getGame(s->getPlayer(rcv))->getPlayer(i);
+		if (p != s->getPlayer(rcv))
+			if ((y - 1) <= p->getY())
+				return false;
+	}
+	return true;
+}
+
+bool	Command::isNoLeftCollision(const struct sockaddr_in& rcv)
+{
+	Server *s = Server::getInstance();
+	int	x;
+
+	x = s->getPlayer(rcv)->getX();
+	for (int i = 0; i < 4; ++i)
+	{
+		Player *p = s->getGame(s->getPlayer(rcv))->getPlayer(i);
+		if (p != s->getPlayer(rcv))
+			if ((x - 1) <= (p->getX() + 98))
+				return false;
+	}
+	return true;
+}
+
+bool	Command::isNoLeftCollision(const struct sockaddr_in& rcv)
+{
+	Server *s = Server::getInstance();
+	int	x;
+
+	x = s->getPlayer(rcv)->getX();
+	for (int i = 0; i < 4; ++i)
+	{
+		Player *p = s->getGame(s->getPlayer(rcv))->getPlayer(i);
+		if (p != s->getPlayer(rcv))
+			if ((x + 1) >= p->getX())
+				return false;
+	}
+	return true;
 }
 
 void	Command::SendConnection(const Player *p, const uint8_t state)
@@ -175,7 +240,6 @@ void	Command::SendConnection(const Player *p, const uint8_t state)
 	c.StateConnection = state;
 	send = getNewHeader(RTProtocol::CONNECTION, sizeof(RTProtocol::Header) + sizeof(RTProtocol::Connection));
 	std::memcpy(send + sizeof(RTProtocol::Header), &c, sizeof(RTProtocol::Connection));
-	std::cout << p->getSockaddr().sin_port << std::endl;
 	s->getSocket()->SendData(p->getSockaddr().sin_addr, p->getSockaddr().sin_port, send, sizeof(RTProtocol::Header) + sizeof(RTProtocol::Connection), 0);
 }
 /*
@@ -209,7 +273,7 @@ void	Command::SendGameState(const Player *p, const uint8_t state)
 
 void	Command::SendGameData(const Player *p)
 {
-	std::cout << "SendGameData" << std::endl;
+//	std::cout << "SendGameData" << std::endl;
 
 	char	*send;
 	RTProtocol::GameData data;
@@ -218,9 +282,9 @@ void	Command::SendGameData(const Player *p)
 	int len = 0;
 	for (int i = 0; i < 4; ++i)
 		if (s->getGame(p)->getPlayer(i) != 0)
-			len += sizeof(RTProtocol::EXTERN_TYPE) + sizeof(RTProtocol::IDENTIFIER) + sizeof(int16_t) + sizeof(int16_t);
+			len += sizeof(RTProtocol::GameData);
 	for (unsigned int i = 0; i < s->getGame(p)->getMonsters().size(); ++i)
-		len += sizeof(RTProtocol::EXTERN_TYPE) + sizeof(RTProtocol::MONSTER_TYPE) + sizeof(int16_t) + sizeof(int16_t);
+		len += sizeof(RTProtocol::GameData);
 	send = getNewHeader(RTProtocol::GAME_DATA, sizeof(RTProtocol::Header) + len);
 	len = sizeof(RTProtocol::Header);
 	for (int i = 0; i < 4; ++i)
@@ -228,20 +292,22 @@ void	Command::SendGameData(const Player *p)
 		{
 			data.ExternType = RTProtocol::PLAYER;
 			data.InternType = s->getGame(p)->getPlayer(i)->getId().Id;
+			data.Id = s->getGame(p)->getPlayer(i)->getId().Id;
 			data.x = s->getGame(p)->getPlayer(i)->getX();
 			data.y = s->getGame(p)->getPlayer(i)->getY();
 			std::memcpy(send + len, &data, sizeof(RTProtocol::GameData));
-			len += sizeof(RTProtocol::EXTERN_TYPE) + sizeof(RTProtocol::IDENTIFIER) + sizeof(int16_t) + sizeof(int16_t);
+			len += sizeof(RTProtocol::GameData);
 		}
 	for (unsigned int i = 0; i < s->getGame(p)->getMonsters().size(); ++i)
 	{
 		data.ExternType = RTProtocol::MONSTER;
 		data.InternType = s->getGame(p)->getMonster(i)->getType();
+		data.Id = i;
 		data.x = s->getGame(p)->getMonster(i)->getX();
 		data.y = s->getGame(p)->getMonster(i)->getY();
 		std::memcpy(send + len, &data, sizeof(RTProtocol::GameData));
-		len += sizeof(RTProtocol::EXTERN_TYPE) + sizeof(RTProtocol::MONSTER_TYPE) + sizeof(int16_t) + sizeof(int16_t);
-	}	
+		len += sizeof(RTProtocol::GameData);
+	}
 	s->getSocket()->SendData(p->getSockaddr().sin_addr, p->getSockaddr().sin_port, send, len, 0);
 }
 

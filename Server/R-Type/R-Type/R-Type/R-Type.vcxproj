@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="Command.hpp" />
     <ClInclude Include="DLL\IDynLib.hpp" />
+    <ClInclude Include="DLL\IMonster.hpp" />
     <ClInclude Include="DLL\LinuxDynLib.hpp" />
     <ClInclude Include="DLL\WindowsDynLib.hpp" />
     <ClInclude Include="Game.hpp" />

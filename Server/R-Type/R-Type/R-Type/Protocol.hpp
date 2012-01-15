@@ -102,6 +102,7 @@ namespace RTProtocol
 	{
 		uint8_t		ExternType;
 		uint8_t		InternType;
+		uint8_t		Id;
 		int16_t		x;
 		int16_t		y;
 	};

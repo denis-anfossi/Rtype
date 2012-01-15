@@ -1,31 +1,26 @@
 #ifndef _LINUXDYNLIB_HPP_
 #define _LINUXDYNLIB_HPP_
 
-#ifdef __linux__
 #include "IDynLib.hpp"
+
+#ifdef __linux__
 #include <dlfcn.h>
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
 
 class LinuxDynLib : public IDynLib
 {
 private:
   void* HandleOpen;
-  std::wstring libName;
   std::string SymbolName;
 public:
   LinuxDynLib();
   ~LinuxDynLib();
-  virtual void* openLib();
+  virtual void* openLib(std::string);
   virtual void* dlSymb();
   virtual int closeLib();
   virtual char* errorLib();
-  void* getHandleOpen();
-  void setHandleOpen(void*);
-  std::wstring getlibName();
-  void setlibName(std::string);
-  std::string getSymbolName();
-  void setSymbolName(std::string);
+  virtual void setSymbolName(std::string);
 };
 #endif
 

@@ -72,6 +72,9 @@
     <ClInclude Include="DLL\WindowsDynLib.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DLL\IMonster.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Thread\UnixMutex.cpp">

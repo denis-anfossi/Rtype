@@ -17,7 +17,6 @@ public:
 	static void	FindCommand(void *param);
 	static Command	*getInstance(void);
 	static void			kill(void);
-//	static void	Test(void *param);
 
 	void	SendConnection(const Player *p, const uint8_t state);
 	void	SendGameData(const Player *p);
@@ -31,8 +30,12 @@ private:
 	void	RecvRunModeJoin(const struct sockaddr_in& rcv);
 	void	RecvGameAction(const receive& rBody);
 
-
 	void	SendGameState(const Player *p, const uint8_t state);
+
+	bool	isNoUpCollision(const struct sockaddr_in& rcv);
+	bool	isNoDownCollision(const struct sockaddr_in& rcv);
+	bool	isNoLeftCollision(const struct sockaddr_in& rcv);
+	bool	isNoRightCollision(const struct sockaddr_in& rcv);
 
 	char	*getNewHeader(uint8_t command, int32_t size);
 
