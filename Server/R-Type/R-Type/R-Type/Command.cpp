@@ -167,14 +167,14 @@ void	Command::RecvGameAction(const receive& rBody)
 bool	Command::isNoUpCollision(const struct sockaddr_in& rcv)
 {
 	Server *s = Server::getInstance();
-	int	y;
 
-	y = s->getPlayer(rcv)->getY();
+	int x = s->getPlayer(rcv)->getX();
+	int y = s->getPlayer(rcv)->getY();
 	for (int i = 0; i < 4; ++i)
 	{
 		Player *p = s->getGame(s->getPlayer(rcv))->getPlayer(i);
 		if (p != s->getPlayer(rcv))
-			if ((y + 1) >= (p->getY() - 55))
+			if ((y + 1) >= (p->getY() - 55) && x <= p->getX() + 98 && x >= p->getX())
 				return false;
 	}
 	return true;
@@ -183,14 +183,14 @@ bool	Command::isNoUpCollision(const struct sockaddr_in& rcv)
 bool	Command::isNoDownCollision(const struct sockaddr_in& rcv)
 {
 	Server *s = Server::getInstance();
-	int	y;
 
-	y = s->getPlayer(rcv)->getY();
+	int x = s->getPlayer(rcv)->getX();
+	int y = s->getPlayer(rcv)->getY();
 	for (int i = 0; i < 4; ++i)
 	{
 		Player *p = s->getGame(s->getPlayer(rcv))->getPlayer(i);
 		if (p != s->getPlayer(rcv))
-			if ((y - 1) <= p->getY())
+			if ((y - 1) <= p->getY() && x <= p->getX() + 98 && x >= p->getX())
 				return false;
 	}
 	return true;
@@ -199,30 +199,30 @@ bool	Command::isNoDownCollision(const struct sockaddr_in& rcv)
 bool	Command::isNoLeftCollision(const struct sockaddr_in& rcv)
 {
 	Server *s = Server::getInstance();
-	int	x;
 
-	x = s->getPlayer(rcv)->getX();
+	int x = s->getPlayer(rcv)->getX();
+	int y = s->getPlayer(rcv)->getY();
 	for (int i = 0; i < 4; ++i)
 	{
 		Player *p = s->getGame(s->getPlayer(rcv))->getPlayer(i);
 		if (p != s->getPlayer(rcv))
-			if ((x - 1) <= (p->getX() + 98))
+			if ((x - 1) <= (p->getX() + 98) && y <= p->getY() && y >= p->getY() - 55)
 				return false;
 	}
 	return true;
 }
 
-bool	Command::isNoLeftCollision(const struct sockaddr_in& rcv)
+bool	Command::isNoRightCollision(const struct sockaddr_in& rcv)
 {
 	Server *s = Server::getInstance();
-	int	x;
 
-	x = s->getPlayer(rcv)->getX();
+	int x = s->getPlayer(rcv)->getX();
+	int y = s->getPlayer(rcv)->getY();
 	for (int i = 0; i < 4; ++i)
 	{
 		Player *p = s->getGame(s->getPlayer(rcv))->getPlayer(i);
 		if (p != s->getPlayer(rcv))
-			if ((x + 1) >= p->getX())
+			if ((x + 1) >= p->getX() && y <= p->getY() && y >= p->getY() - 55)
 				return false;
 	}
 	return true;
@@ -242,21 +242,7 @@ void	Command::SendConnection(const Player *p, const uint8_t state)
 	std::memcpy(send + sizeof(RTProtocol::Header), &c, sizeof(RTProtocol::Connection));
 	s->getSocket()->SendData(p->getSockaddr().sin_addr, p->getSockaddr().sin_port, send, sizeof(RTProtocol::Header) + sizeof(RTProtocol::Connection), 0);
 }
-/*
-void	Command::SendIdentifier(const Player *p, const uint8_t id)
-{
-	std::cout << "SendIdentifier" << std::endl;
 
-	char	*send;
-	RTProtocol::Identifier i;
-	Server *s = Server::getInstance();
-
-	i.Id = id;
-	send = getNewHeader(RTProtocol::IDENTIFIER, sizeof(RTProtocol::Header) + sizeof(RTProtocol::Identifier));
-	std::memcpy(send + sizeof(RTProtocol::Header), &i, sizeof(RTProtocol::Identifier));
-	s->getSocket()->SendData(p->getSockaddr().sin_addr, p->getSockaddr().sin_port, send, sizeof(RTProtocol::Header) + sizeof(RTProtocol::Identifier), 0);
-}
-*/
 void	Command::SendGameState(const Player *p, const uint8_t state)
 {
 	std::cout << "SendGameState" << std::endl;
