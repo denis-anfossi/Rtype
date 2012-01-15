@@ -1,4 +1,4 @@
-﻿Build started 1/15/2012 9:40:47 PM.
+﻿Build started 1/15/2012 10:28:05 PM.
      1>Project "C:\Users\xMalloc\Desktop\R-Type\Project\Project\R-Type\Rtype\Server\R-Type\R-Type\R-Type\R-Type.vcxproj" on node 2 (clean target(s)).
      1>_PrepareForClean:
          Deleting file "Debug\R-Type.lastbuildstate".
@@ -6,4 +6,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.01
+Time Elapsed 00:00:00.04

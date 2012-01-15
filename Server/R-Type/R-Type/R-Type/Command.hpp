@@ -2,6 +2,7 @@
 #define		_COMMAND_HPP_
 
 #include "Server.hpp"
+#include <cstring>
 
 struct	_command
 {

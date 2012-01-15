@@ -3,6 +3,7 @@
 
 #ifdef	__linux__
 #include	"Socket/UnixSocket.hpp"
+#include	<sys/time.h>
 #else
 #include	"Socket\WinSocket.hpp"
 #endif

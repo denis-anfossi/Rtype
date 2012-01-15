@@ -2,7 +2,7 @@
 #define		GAME_HPP
 
 #ifdef __linux__
-#include	"DLL\LinuxDynLib.hpp"
+#include	"DLL/LinuxDynLib.hpp"
 #else
 #include	"DLL\WindowsDynLib.hpp"
 #endif

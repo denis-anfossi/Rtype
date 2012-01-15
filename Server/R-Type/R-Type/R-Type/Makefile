@@ -4,22 +4,25 @@ CC 	= 	g++ -o
 NAME 	=	R-Type-server
 
 SOCKET	=	Socket/
-
 THREAD	=	Thread/
+DLL	=	DLL/
 
 SRC 	= 	main.cpp		\
 		Command.cpp		\
 		Game.cpp		\
 		Player.cpp		\
 		Server.cpp		\
+		ThreadPool_.cpp		\
 		$(SOCKET)UnixSocket.cpp	\
 		$(SOCKET)WinSocket.cpp	\
 		$(THREAD)UnixMutex.cpp	\
 		$(THREAD)WinMutex.cpp	\
 		$(THREAD)UnixThread.cpp	\
 		$(THREAD)WinThread.cpp	\
+		$(DLL)LinuxDynLib.cpp	\
+		$(DLL)WindowsDynLib.cpp	\
 
-LIB     =       -lpthread
+LIB     =       -lpthread -ldl
 
 INCLUDE =       -I.
 

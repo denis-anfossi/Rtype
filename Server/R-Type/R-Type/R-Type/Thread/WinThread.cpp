@@ -26,7 +26,7 @@ void	WinThread::join(void)
 {
   WaitForSingleObject(thread, INFINITE);
 }
-
+/*
 void	WinThread::start(void)
 {
 	resume();
@@ -41,6 +41,5 @@ void	WinThread::resume(void)
 {
 	ResumeThread(thread);
 }
-
-
-#endif /* WIN32 */
+*/
+#endif /* WIN_32 */

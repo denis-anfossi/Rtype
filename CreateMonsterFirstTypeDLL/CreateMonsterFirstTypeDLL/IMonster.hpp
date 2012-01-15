@@ -23,10 +23,10 @@ public:
 #else
 #define DECLDIR __declspec(dllimport)
 #endif
-
+/*
 extern "C"
 {
    DECLDIR void* getInstanceDLL(int X, int Y);
 }
-
+*/
 #endif	/* IMONSTER_HPP */

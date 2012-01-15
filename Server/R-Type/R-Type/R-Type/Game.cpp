@@ -52,32 +52,32 @@ void	Game::setPlayer(Player *_player, RTProtocol::Identifier id)
 
 void	Game::addMonster(RTProtocol::MONSTER_TYPE type)
 {
-	std::string	libName;
-	if (type == RTProtocol::MONSTER_TYPE1)
-		libName = "DLL/CreateMonsterFirstTypeDLL";
-	else if (type == RTProtocol::MONSTER_TYPE2)
-		libName = "DLL/CreateMonsterFirstTypeDLL";
-
+  std::string	libName;
+  if (type == RTProtocol::MONSTER_TYPE1)
+    libName = "DLL/CreateMonsterFirstTypeDLL";
+  else if (type == RTProtocol::MONSTER_TYPE2)
+    libName = "DLL/CreateMonsterFirstTypeDLL";
+  
 #ifdef __linux__
-	libName += ".so";
+  libName += ".so";
 #else
-	libName += ".dll";
+  libName += ".dll";
 #endif
-
-	IMonster	*(*external_creator)(int, int);
-
-	if (sharedLib->openLib(libName) != NULL)
-	{
-		sharedLib->setSymbolName("getInstanceDLL");
-		external_creator = reinterpret_cast<IMonster *	(*)(int, int)>(sharedLib->dlSymb());
-		monsters.push_back(external_creator(100, 100));
-		sharedLib->closeLib();
-	}
+  
+  IMonster	*(*external_creator)(int, int);
+  
+  if (sharedLib->openLib(libName) != NULL)
+    {
+      sharedLib->setSymbolName("getInstanceDLL");
+      external_creator = reinterpret_cast<IMonster *	(*)(int, int)>(sharedLib->dlSymb());
+      monsters.push_back(external_creator(100, 100));
+      sharedLib->closeLib();
+    }
 }
 
 void	Game::deleteMonster(int id)
 {
-
+  
 }
 
 int		Game::getId(void) const

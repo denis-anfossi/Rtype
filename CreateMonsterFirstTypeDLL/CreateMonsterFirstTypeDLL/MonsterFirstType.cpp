@@ -7,50 +7,59 @@ MonsterFirstType::MonsterFirstType(int x, int y): x(x), y(y)
 MonsterFirstType::~MonsterFirstType(void)
 { }
 
-int16_t					MonsterFirstType::getX(void)
+int16_t			MonsterFirstType::getX(void)
 {
-	return x;
+  return x;
 }
 
-int16_t					MonsterFirstType::getY(void)
+int16_t			MonsterFirstType::getY(void)
 {
-	return y;
+  return y;
 }
 
 std::vector<int16_t>	MonsterFirstType::getXFires(void)
 {
-	return xFires;
+  return xFires;
 }
 
 std::vector<int16_t>	MonsterFirstType::getYFires(void)
 {
-	return yFires;
+  return yFires;
 }
 
-uint8_t					MonsterFirstType::getType(void)
+uint8_t			MonsterFirstType::getType(void)
 {
-	return type;
+  return type;
 }
 
-uint8_t					MonsterFirstType::getWidth(void)
+uint8_t			MonsterFirstType::getWidth(void)
 {
-	return width;
+  return width;
 }
 
-uint8_t					MonsterFirstType::getHeight(void)
+uint8_t			MonsterFirstType::getHeight(void)
 {
-	return height;
+  return height;
 }
 
-void					MonsterFirstType::update(void)
+void			MonsterFirstType::update(void)
 {
 
 }
+
+#define DECLDIR __declspec(dllexport)
 
 extern "C"
 {
-	void DECLDIR *getInstanceDLL(int x, int y)
-	{
-		return	static_cast<void *>(new MonsterFirstType(x, y));
-	}
+#ifdef	__linux__
+  void	*getInstanceDLL(int x, int y)
+  {
+    return	static_cast<void *>(new MonsterFirstType(x, y));
+  }
+#else
+  void DECLDIR *getInstanceDLL(int x, int y)
+  {
+    return	static_cast<void *>(new MonsterFirstType(x, y));
+  }
+#endif
 }

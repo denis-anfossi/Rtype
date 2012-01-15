@@ -3,25 +3,25 @@
 
 ThreadPool_	*ThreadPool_::_singleton = NULL;
 #ifdef __linux__
-	IMutex *ThreadPool_::_singletonMutex = new UnixMutex();
+IMutex *ThreadPool_::_singletonMutex = new UnixMutex();
 #else
-	IMutex *ThreadPool_::_singletonMutex = new WinMutex();
+IMutex *ThreadPool_::_singletonMutex = new WinMutex();
 #endif
 
 ThreadPool_	*ThreadPool_::getInstance()
 {
-	if (_singleton == NULL)
-		_singleton = new ThreadPool_();
-	return _singleton;
+  if (_singleton == NULL)
+    _singleton = new ThreadPool_();
+  return _singleton;
 }
 
 void	ThreadPool_::kill()
 {
-	if (_singleton != NULL)
-	{
-		delete	_singleton;
-		_singleton = NULL;
-	}
+  if (_singleton != NULL)
+    {
+      delete	_singleton;
+      _singleton = NULL;
+    }
 }
 
 ThreadPool_::ThreadPool_(void)
