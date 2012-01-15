@@ -1,28 +1,9 @@
-﻿Build started 14/01/2012 15:49:09.
-     1>Project "C:\Users\vincentTE\Desktop\Abstract\Abstract\Abstract.vcxproj" on node 2 (build target(s)).
-     1>InitializeBuildStatus:
-         Creating "Debug\Abstract.unsuccessfulbuild" because "AlwaysCreate" was specified.
-       ClCompile:
-         D:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt main2.cpp
-         main2.cpp
-       ManifestResourceCompile:
-         All outputs are up-to-date.
-       Link:
-         D:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\vincentTE\Desktop\Abstract\Debug\Abstract.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\Abstract.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\vincentTE\Desktop\Abstract\Debug\Abstract.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\vincentTE\Desktop\Abstract\Debug\Abstract.lib" /MACHINE:X86 Debug\Abstract.exe.embed.manifest.res
-         Debug\LinuxDynLib.obj
-         Debug\main2.obj
-         Debug\WindowsDynLib.obj
-       Manifest:
-         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"Debug\Abstract.exe.embed.manifest" /manifest Debug\Abstract.exe.intermediate.manifest
-         All outputs are up-to-date.
-       LinkEmbedManifest:
-         All outputs are up-to-date.
-         Abstract.vcxproj -> C:\Users\vincentTE\Desktop\Abstract\Debug\Abstract.exe
-       FinalizeBuildStatus:
-         Deleting file "Debug\Abstract.unsuccessfulbuild".
-         Touching "Debug\Abstract.lastbuildstate".
-     1>Done Building Project "C:\Users\vincentTE\Desktop\Abstract\Abstract\Abstract.vcxproj" (build target(s)).
+﻿Build started 1/15/2012 2:48:26 PM.
+     1>Project "C:\Users\xMalloc\Desktop\R-Type\Project\Project\R-Type\Rtype\DLLStuff\Abstract\Abstract\Abstract.vcxproj" on node 3 (clean target(s)).
+     1>_PrepareForClean:
+         Deleting file "Debug\Abstract.lastbuildstate".
+     1>Done Building Project "C:\Users\xMalloc\Desktop\R-Type\Project\Project\R-Type\Rtype\DLLStuff\Abstract\Abstract\Abstract.vcxproj" (clean target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:01.75
+Time Elapsed 00:00:00.02
