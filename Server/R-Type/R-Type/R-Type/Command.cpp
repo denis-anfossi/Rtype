@@ -70,8 +70,12 @@ void	Command::RecvConnectionLogIn(const struct sockaddr_in& rcv)
 
 	Server *s = Server::getInstance();
 
-	s->addNewPlayer(rcv);
-	SendConnection(s->getPlayer(rcv), RTProtocol::LOG_IN);
+	if (s->getPlayer(rcv) == 0)
+	{
+		s->addNewPlayer(rcv);
+		std::cout << (int)s->getPlayer(rcv)->getConnect() << " ID: " << (int)s->getPlayer(rcv)->getId().Id << " IDG" << (int)s->getPlayer(rcv)->getIdGame() << std::endl;
+		SendConnection(s->getPlayer(rcv), RTProtocol::LOG_IN);
+	}
 }
 
 void	Command::RecvConnectionLogOut(const struct sockaddr_in& rcv)
@@ -147,6 +151,7 @@ void	Command::RecvGameAction(const receive& rBody)
 
 	Server *s = Server::getInstance();
 	RTProtocol::GameAction	*h = reinterpret_cast<RTProtocol::GameAction *>(rBody.data_ + sizeof(RTProtocol::Header));
+	s->playersMutex->lock();
 	if (h->Action == RTProtocol::UP)
 		s->getPlayer(rBody.s_rcv)->setY(s->getPlayer(rBody.s_rcv)->getY() - 1);
 	else if (h->Action == RTProtocol::DOWN)
@@ -155,6 +160,7 @@ void	Command::RecvGameAction(const receive& rBody)
 		s->getPlayer(rBody.s_rcv)->setX(s->getPlayer(rBody.s_rcv)->getX() - 1);
 	else if (h->Action == RTProtocol::RIGHT && s->getPlayer(rBody.s_rcv)->getX() <= 800)
 		s->getPlayer(rBody.s_rcv)->setX(s->getPlayer(rBody.s_rcv)->getX() + 1);
+	s->playersMutex->unlock();
 }
 
 void	Command::SendConnection(const Player *p, const uint8_t state)
@@ -162,12 +168,14 @@ void	Command::SendConnection(const Player *p, const uint8_t state)
 	std::cout << "SendConnection" << std::endl;
 
 	char	*send;
+
 	RTProtocol::Connection c;
 	Server *s = Server::getInstance();
 
 	c.StateConnection = state;
 	send = getNewHeader(RTProtocol::CONNECTION, sizeof(RTProtocol::Header) + sizeof(RTProtocol::Connection));
 	std::memcpy(send + sizeof(RTProtocol::Header), &c, sizeof(RTProtocol::Connection));
+	std::cout << p->getSockaddr().sin_port << std::endl;
 	s->getSocket()->SendData(p->getSockaddr().sin_addr, p->getSockaddr().sin_port, send, sizeof(RTProtocol::Header) + sizeof(RTProtocol::Connection), 0);
 }
 /*
@@ -239,7 +247,7 @@ void	Command::SendGameData(const Player *p)
 
 char	*Command::getNewHeader(uint8_t command, int32_t size)
 {
-	std::cout << "getNewHeader" << std::endl;
+//	std::cout << "getNewHeader" << std::endl;
 
 	RTProtocol::Header	h;
 

@@ -22,10 +22,13 @@ Server::Server(void)
 {
 #ifdef __linux__
 	serverMutex = new UnixMutex();
+	playersMutex = new UnixMutex();
 #else
 	serverMutex = new WinMutex();
+	playersMutex = new WinMutex();
 #endif
 	serverMutex->init();
+	playersMutex->init();
 
 	serverMutex->lock();
 	threadPool = ThreadPool_::getInstance();
@@ -149,8 +152,10 @@ void	Server::sendUpdateClients(void *param)
 
 void	Server::addNewPlayer(const struct sockaddr_in rcv)
 {
+	playersMutex->lock();
 	if (getPlayer(rcv) == 0)
 		players.push_back(new Player(rcv));
+	playersMutex->unlock();
 }
 
 Player	*Server::getPlayer(const struct sockaddr_in rcv) const
@@ -190,7 +195,9 @@ void	Server::deletePlayer(const Player *p)
 void	Server::addNewGame(Player *p, int id)
 {
 	games.push_back(new Game(p, id));
+	playersMutex->lock();
 	p->setIdGame(id);
+	playersMutex->unlock();
 }
 
 Game	*Server::getGame(void) const

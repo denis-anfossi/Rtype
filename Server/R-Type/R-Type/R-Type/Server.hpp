@@ -43,6 +43,8 @@ public:
 
 	static Server	*getInstance(void);
 	static void		kill(void);
+
+	IMutex		*playersMutex;
 private:
 	Server(void);
 	~Server(void);

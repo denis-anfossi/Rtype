@@ -48,11 +48,11 @@ namespace RTProtocol
 
 	enum			IDENTIFIER
 	{
-		NO_PLAY = -1,
 		PLAYER_1 = 0,
 		PLAYER_2,
 		PLAYER_3,
-		PLAYER_4
+		PLAYER_4,
+		NO_PLAY
 	};
 
 	struct			Identifier
