@@ -53,7 +53,7 @@ Server::~Server(void)
 
 void	Server::init(void)
 {
-	threadPool->ThreadPoolInit(5);
+	threadPool->ThreadPoolInit(10);
 	if (!(socket->CreateSocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)))
 		throw std::exception();
 	if (!(socket->BindSocket(AF_INET, 4242)))
@@ -65,6 +65,8 @@ void	Server::running(void)
 	RTProtocol::Header		*h;
 	Command		*c = Command::getInstance();
 
+	threadPool->QueuePush(Server::checkConnectionClients, NULL);
+	threadPool->QueuePush(Server::sendUpdateClients, NULL);
 	while (1)
 	{
 		receive rHeader = socket->RecvData(sizeof(RTProtocol::Header), MSG_PEEK);
@@ -73,7 +75,75 @@ void	Server::running(void)
 		_command	*recv = new _command();
 		recv->h = h;
 		recv->r = rBody;
-		threadPool->QueuePush(Command::Test, recv);
+		threadPool->QueuePush(Command::FindCommand, recv);
+	}
+}
+
+#ifdef __linux__
+	#infclude <unistd.h>
+#endif
+
+void	Server::checkConnectionClients(void *param)
+{
+	Command *c = Command::getInstance();
+	Server	*s = Server::getInstance();
+
+	while (1)
+	{
+		for (unsigned int i = 0; i < s->getPlayers().size(); ++i)
+		{
+			if (s->getPlayer(i)->getConnect() == true)
+			{
+				s->getPlayer(i)->setConnect(false);
+				c->SendConnection(s->getPlayer(i), RTProtocol::CHECK);
+			}
+			else if (s->getPlayer(i)->getIdGame() != -1)
+			{
+				for (int i = 0; i < 4; ++i)
+					if (s->getGame(s->getPlayer(i))->getPlayer(i) != 0)
+						c->SendConnection(s->getPlayer(i), RTProtocol::LOG_OUT);
+				s->getGame(s->getPlayer(i))->setPlayer(0, s->getPlayer(i)->getId());
+			}
+			s->deletePlayer(s->getPlayer(i));
+		}
+#ifdef __linux__
+		sleep(30);
+#else
+		Sleep(30000);
+#endif
+	}
+}
+
+void	Server::sendUpdateClients(void *param)
+{
+	struct timeval	now;
+	struct timeval	diff;
+
+	Command *c = Command::getInstance();
+	Server	*s = Server::getInstance();
+
+	while (1)
+	{
+		gettimeofday(&now, NULL);
+		for (unsigned int i = 0; i < s->getPlayers().size(); ++i)
+		{
+			if (s->getPlayer(i)->getIdGame() != -1)
+				c->SendGameData(s->getPlayer(i));
+		}
+		Sleep(10);
+		gettimeofday(&diff, NULL);
+		diff.tv_sec = diff.tv_sec - now.tv_sec;
+		if (diff.tv_sec > 0)
+		{
+			diff.tv_usec += diff.tv_sec * 1000000;
+			diff.tv_sec = 0;
+		}
+		diff.tv_usec = (1000000 - (diff.tv_usec - now.tv_usec) ) / 120;
+#ifdef __linux__
+		usleep(diff.tv_usec);
+#else
+		Sleep(diff.tv_usec / 1000);
+#endif
 	}
 }
 
@@ -95,6 +165,18 @@ Player	*Server::getPlayer(const struct sockaddr_in rcv) const
   return 0;
 }
 
+Player	*Server::getPlayer(const unsigned int it) const
+{
+	if (players.size() > it)
+		return players[it];
+	return NULL;
+}
+
+std::vector<Player *>	Server::getPlayers(void) const
+{
+	return players;
+}
+
 void	Server::deletePlayer(const Player *p)
 {
 	for (std::vector<Player *>::iterator it = players.begin(); it != players.end(); ++it)
@@ -105,9 +187,10 @@ void	Server::deletePlayer(const Player *p)
 		}
 }
 
-void	Server::addNewGame(void)
+void	Server::addNewGame(Player *p, int id)
 {
-	games.push_back(new Game());
+	games.push_back(new Game(p, id));
+	p->setIdGame(id);
 }
 
 Game	*Server::getGame(void) const
@@ -123,6 +206,11 @@ Game	*Server::getGame(const Player *p) const
 	return 0;
 }
 
+std::vector<Game *>		Server::getGames(void) const
+{
+	return games;
+}
+
 void	Server::deleteGame(const Game *g)
 {
 	for (std::vector<Game *>::iterator it = games.begin(); it != games.end(); ++it)
@@ -131,6 +219,16 @@ void	Server::deleteGame(const Game *g)
 			games.erase(it);
 			break;
 		}
+}
+
+int		Server::getAvailableId(void) const
+{
+	int	id = 0;
+
+	for (std::vector<Game *>::const_iterator it = games.begin(); it != games.end(); ++it)
+		if ((*it)->getId() >= id)
+			++id;
+	return id;
 }
 
 Game	*Server::getAvailableSlot(void) const
@@ -145,3 +243,16 @@ ISocket	*Server::getSocket(void) const
 {
 	return socket;
 }
+
+#ifndef	__linux__
+
+int		gettimeofday (struct timeval *tp, void *tz)
+{
+  struct _timeb timebuffer;
+  _ftime(&timebuffer);
+  tp->tv_sec = timebuffer.time;
+  tp->tv_usec = timebuffer.millitm * 1000;
+  return 0;
+}
+
+#endif

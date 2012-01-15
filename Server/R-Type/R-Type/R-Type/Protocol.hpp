@@ -25,7 +25,8 @@ namespace RTProtocol
 	enum			CONNECTION
 	{
 		LOG_IN = 0,
-		LOG_OUT
+		LOG_OUT,
+		CHECK
 	};
 
 	struct			Connection
@@ -84,7 +85,6 @@ namespace RTProtocol
 	};
 
 	#pragma pack(pop)
-
 }
 
 #endif		/* PROTOCOLP_HPP */

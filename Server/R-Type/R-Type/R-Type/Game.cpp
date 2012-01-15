@@ -1,6 +1,6 @@
 #include "Game.hpp"
 
-Game::Game(void): id(-1), player1(0), player2(0), player3(0), player4(0)
+Game::Game(Player *p, int id): id(id), player1(p), player2(0), player3(0), player4(0)
 { }
 
 Game::~Game(void)

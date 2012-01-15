@@ -1,6 +1,6 @@
 #include "Player.hpp"
 
-Player::Player(const struct sockaddr_in _rcv): rcv(_rcv), idGame(-1)
+Player::Player(const struct sockaddr_in _rcv): rcv(_rcv), idGame(-1), connect(true)
 {
 	id.Id = RTProtocol::NO_PLAY;
 }
@@ -43,4 +43,14 @@ void	Player::setIdGame(int _idGame)
 int		Player::getIdGame(void) const
 {
 	return idGame;
+}
+
+void	Player::setConnect(bool _connect)
+{
+	connect = _connect;
+}
+
+bool	Player::getConnect(void) const
+{
+	return connect;
 }

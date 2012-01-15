@@ -14,42 +14,32 @@ class	Server;
 class	Command
 {
 public:
-static int inc;
-	void	FindCommand(const RTProtocol::Header *h, const receive& rBody);
-
-	static void	Test(void *param);
+	static void	FindCommand(void *param);
 	static Command	*getInstance(void);
 	static void			kill(void);
+//	static void	Test(void *param);
 
+	void	SendConnection(const Player *p, const uint8_t state);
+	void	SendGameData(const Player *p);
 private:
 	void	RecvConnection(const receive& rBody);
 	void	RecvConnectionLogIn(const struct sockaddr_in& rcv);
 	void	RecvConnectionLogOut(const struct sockaddr_in& rcv);
+	void	RecvConnectionCheck(const struct sockaddr_in& rcv);
 	void	RecvRunMode(const receive& rBody);
 	void	RecvRunModeCreate(const struct sockaddr_in& rcv);
 	void	RecvRunModeJoin(const struct sockaddr_in& rcv);
 	void	RecvGameAction(const receive& rBody);
 
-	void	SendConnection(const Player *p, const uint8_t state);
-	void	SendIdentifier(const Player *p, const uint8_t id);
-	void	SendGameState(const Player *p, const uint8_t state);
-	void	SendGameAction();
 
-	void	SendGame();
-	void	SendGameNew();
-	void	SendGameUpdate();
-	void	SendPlayer();
-	void	SendPlayerNew();
-	void	SendPlayerUpdate();
+	void	SendGameState(const Player *p, const uint8_t state);
 
 	char	*getNewHeader(uint8_t command, int32_t size);
 
-	Server	*s;
 	static Command	*_singleton;
 
 	Command(void);
 	~Command(void);
-
 };
 
 #endif		/* _COMMAND_HPP_ */

@@ -25,14 +25,21 @@ public:
 	void	running(void);
 
 	void	addNewPlayer(const struct sockaddr_in rcv);
-	void	addNewGame(void);
+	void	addNewGame(Player *p, int id);
 	Player	*getPlayer(const struct sockaddr_in rcv) const;
+	Player	*getPlayer(const unsigned int it) const;
+	std::vector<Player *>	getPlayers(void) const;
 	Game	*getGame(void) const;
 	Game	*getGame(const Player *p) const;
+	std::vector<Game *>		getGames(void) const;
+	int		getAvailableId(void) const;
 	Game	*getAvailableSlot(void) const;
 	ISocket	*getSocket(void) const;
 	void	deletePlayer(const Player *p);
 	void	deleteGame(const Game *g);
+
+	static void		checkConnectionClients(void *param);
+	static void		sendUpdateClients(void *param);
 
 	static Server	*getInstance(void);
 	static void		kill(void);
@@ -48,5 +55,13 @@ private:
 	std::vector<Player *>	players;
 	std::vector<Game *>		games;
 };
+
+#ifndef __linux__
+
+#include	<sys/timeb.h>
+
+int	gettimeofday(struct timeval *tp, void *tz);
+
+#endif
 
 #endif		/* SERVER_HPP */

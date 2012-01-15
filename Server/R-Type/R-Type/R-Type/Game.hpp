@@ -6,7 +6,7 @@
 class Game
 {
 public:
-	Game(void);
+	Game(Player *p, int id);
 	~Game(void);
 
 	void	setId(int _id);
