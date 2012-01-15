@@ -53,6 +53,16 @@ Player	*Game::getPlayer(int id) const
 	return 0;
 }
 
+Monster	*Game::getMonster(int id) const
+{
+	return monsters[id];
+}
+
+std::vector<Monster *>	Game::getMonsters(void) const
+{
+	return monsters;
+}
+
 int		Game::getEmptySlot() const
 {
 	if (player1 == 0)

@@ -12,6 +12,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Command.hpp" />
+    <ClInclude Include="DLL\IDynLib.hpp" />
+    <ClInclude Include="DLL\LinuxDynLib.hpp" />
+    <ClInclude Include="DLL\WindowsDynLib.hpp" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="Player.hpp" />
     <ClInclude Include="Protocol.hpp" />
@@ -30,6 +33,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Command.cpp" />
+    <ClCompile Include="DLL\LinuxDynLib.cpp" />
+    <ClCompile Include="DLL\WindowsDynLib.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />

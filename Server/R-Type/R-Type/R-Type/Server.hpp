@@ -57,11 +57,8 @@ private:
 };
 
 #ifndef __linux__
-
 #include	<sys/timeb.h>
-
 int	gettimeofday(struct timeval *tp, void *tz);
-
 #endif
 
 #endif		/* SERVER_HPP */

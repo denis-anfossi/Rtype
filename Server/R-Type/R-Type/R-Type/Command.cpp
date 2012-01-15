@@ -143,7 +143,18 @@ void	Command::RecvRunModeJoin(const struct sockaddr_in& rcv)
 
 void	Command::RecvGameAction(const receive& rBody)
 {
-  std::cout << "RecvGameAction" << std::endl;
+	std::cout << "RecvGameAction" << std::endl;
+
+	Server *s = Server::getInstance();
+	RTProtocol::GameAction	*h = reinterpret_cast<RTProtocol::GameAction *>(rBody.data_ + sizeof(RTProtocol::Header));
+	if (h->Action == RTProtocol::UP)
+		s->getPlayer(rBody.s_rcv)->setY(s->getPlayer(rBody.s_rcv)->getY() - 1);
+	else if (h->Action == RTProtocol::DOWN)
+		s->getPlayer(rBody.s_rcv)->setY(s->getPlayer(rBody.s_rcv)->getY() + 1);
+	else if (h->Action == RTProtocol::LEFT && s->getPlayer(rBody.s_rcv)->getX() >= 0)
+		s->getPlayer(rBody.s_rcv)->setX(s->getPlayer(rBody.s_rcv)->getX() - 1);
+	else if (h->Action == RTProtocol::RIGHT && s->getPlayer(rBody.s_rcv)->getX() <= 800)
+		s->getPlayer(rBody.s_rcv)->setX(s->getPlayer(rBody.s_rcv)->getX() + 1);
 }
 
 void	Command::SendConnection(const Player *p, const uint8_t state)
@@ -193,13 +204,37 @@ void	Command::SendGameData(const Player *p)
 	std::cout << "SendGameData" << std::endl;
 
 	char	*send;
-//	RTProtocol::GameState g;
+	RTProtocol::GameData data;
 	Server *s = Server::getInstance();
 
-//	g.State = state;
-//	send = getNewHeader(RTProtocol::GAME_STATE, sizeof(RTProtocol::Header) + sizeof(RTProtocol::GameState));
-//	std::memcpy(send + sizeof(RTProtocol::Header), &g, sizeof(RTProtocol::GameState));
-//	s->getSocket()->SendData(p->getSockaddr().sin_addr, p->getSockaddr().sin_port, send, sizeof(RTProtocol::Header) + sizeof(RTProtocol::GameState), 0);
+	int len = 0;
+	for (int i = 0; i < 4; ++i)
+		if (s->getGame(p)->getPlayer(i) != 0)
+			len += sizeof(RTProtocol::EXTERN_TYPE) + sizeof(RTProtocol::IDENTIFIER) + sizeof(int16_t) + sizeof(int16_t);
+	for (unsigned int i = 0; i < s->getGame(p)->getMonsters().size(); ++i)
+		len += sizeof(RTProtocol::EXTERN_TYPE) + sizeof(RTProtocol::MONSTER_TYPE) + sizeof(int16_t) + sizeof(int16_t);
+	send = getNewHeader(RTProtocol::GAME_DATA, sizeof(RTProtocol::Header) + len);
+	len = sizeof(RTProtocol::Header);
+	for (int i = 0; i < 4; ++i)
+		if (s->getGame(p)->getPlayer(i) != 0)
+		{
+			data.ExternType = RTProtocol::PLAYER;
+			data.InternType = s->getGame(p)->getPlayer(i)->getId().Id;
+			data.x = s->getGame(p)->getPlayer(i)->getX();
+			data.y = s->getGame(p)->getPlayer(i)->getY();
+			std::memcpy(send + len, &data, sizeof(RTProtocol::GameData));
+			len += sizeof(RTProtocol::EXTERN_TYPE) + sizeof(RTProtocol::IDENTIFIER) + sizeof(int16_t) + sizeof(int16_t);
+		}
+	for (unsigned int i = 0; i < s->getGame(p)->getMonsters().size(); ++i)
+	{
+		data.ExternType = RTProtocol::MONSTER;
+		data.InternType = s->getGame(p)->getMonster(i)->getType();
+		data.x = s->getGame(p)->getMonster(i)->getX();
+		data.y = s->getGame(p)->getMonster(i)->getY();
+		std::memcpy(send + len, &data, sizeof(RTProtocol::GameData));
+		len += sizeof(RTProtocol::EXTERN_TYPE) + sizeof(RTProtocol::MONSTER_TYPE) + sizeof(int16_t) + sizeof(int16_t);
+	}	
+	s->getSocket()->SendData(p->getSockaddr().sin_addr, p->getSockaddr().sin_port, send, len, 0);
 }
 
 char	*Command::getNewHeader(uint8_t command, int32_t size)

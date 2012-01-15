@@ -13,7 +13,8 @@ namespace RTProtocol
 		RUN_MODE,
 		IDENTIFIER,
 		GAME_STATE,
-		GAME_ACTION
+		GAME_ACTION,
+		GAME_DATA
 	};
 
 	struct			Header
@@ -82,6 +83,27 @@ namespace RTProtocol
 	struct			GameAction
 	{
 		uint8_t		Action;
+	};
+
+	enum			EXTERN_TYPE
+	{
+		PLAYER = 0,
+		MONSTER,
+		FIRE
+	};
+
+	enum			MONSTER_TYPE
+	{
+		MONSTER_TYPE1 = 0,
+		MONSTER_TYPE2,
+	};
+
+	struct			GameData
+	{
+		uint8_t		ExternType;
+		uint8_t		InternType;
+		int16_t		x;
+		int16_t		y;
 	};
 
 	#pragma pack(pop)

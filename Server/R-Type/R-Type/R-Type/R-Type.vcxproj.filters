@@ -63,6 +63,15 @@
     <ClInclude Include="ThreadPool_.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DLL\IDynLib.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLL\LinuxDynLib.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLL\WindowsDynLib.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Thread\UnixMutex.cpp">
@@ -99,6 +108,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ThreadPool_.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLL\LinuxDynLib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLL\WindowsDynLib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

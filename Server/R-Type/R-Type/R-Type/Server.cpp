@@ -99,7 +99,7 @@ void	Server::checkConnectionClients(void *param)
 			}
 			else if (s->getPlayer(i)->getIdGame() != -1)
 			{
-				for (int i = 0; i < 4; ++i)
+				for (int j = 0; j < 4; ++j)
 					if (s->getGame(s->getPlayer(i))->getPlayer(i) != 0)
 						c->SendConnection(s->getPlayer(i), RTProtocol::LOG_OUT);
 				s->getGame(s->getPlayer(i))->setPlayer(0, s->getPlayer(i)->getId());
@@ -249,7 +249,7 @@ ISocket	*Server::getSocket(void) const
 int		gettimeofday (struct timeval *tp, void *tz)
 {
   struct _timeb timebuffer;
-  _ftime(&timebuffer);
+  _ftime_s(&timebuffer);
   tp->tv_sec = timebuffer.time;
   tp->tv_usec = timebuffer.millitm * 1000;
   return 0;
