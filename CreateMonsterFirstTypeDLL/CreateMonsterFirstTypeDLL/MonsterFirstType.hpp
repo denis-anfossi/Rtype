@@ -14,11 +14,14 @@ public:
 	virtual	std::vector<int16_t>	getXFires(void);
 	virtual	std::vector<int16_t>	getYFires(void);
 	virtual uint8_t					getType(void);
+	virtual void					update(void);
 	virtual uint8_t					getWidth(void);
 	virtual uint8_t					getHeight(void);
-	virtual void					update(void);
+	virtual	uint32_t				getId(void);
+	virtual void					setId(uint32_t id);
 
 private:
+	uint32_t	id;
 	uint8_t		width;
 	uint8_t		height;
 	uint8_t		type;

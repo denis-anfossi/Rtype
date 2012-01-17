@@ -16,6 +16,8 @@ public:
 	virtual void	update(void) = 0;
 	virtual uint8_t	getWidth(void) = 0;
 	virtual uint8_t getHeight(void) = 0;
+	virtual	uint32_t	getId(void) = 0;
+	virtual void		setId(uint32_t _id) = 0;
 };
 
 #endif	/* IMONSTER_HPP */

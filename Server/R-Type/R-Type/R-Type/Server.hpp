@@ -45,8 +45,11 @@ public:
 	static Server	*getInstance(void);
 	static void		kill(void);
 
+	IMutex		*threadPoolMutex;
+	IMutex		*socketMutex;
 	IMutex		*playersMutex;
-	IMutex		*serverMutex;
+	IMutex		*gamesMutex;
+//	IMutex		*serverMutex;
 private:
 	Server(void);
 	~Server(void);

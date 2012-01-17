@@ -2,12 +2,13 @@
 #include <iostream>
 
 ThreadPool_	*ThreadPool_::_singleton = NULL;
+/*
 #ifdef __linux__
 IMutex *ThreadPool_::_singletonMutex = new UnixMutex();
 #else
 IMutex *ThreadPool_::_singletonMutex = new WinMutex();
 #endif
-
+*/
 ThreadPool_	*ThreadPool_::getInstance()
 {
   if (_singleton == NULL)
@@ -62,44 +63,51 @@ void	ThreadPool_::ThreadPoolDestroy()
 	TerminatedMutex->unlock();
 	for (unsigned int i = 0; i < ThreadQueue.size(); ++i)
 		ThreadQueue[i]->join();
+	ThreadQueueMutex->lock();
 	for (unsigned int i = 0; i < ThreadQueue.size(); ++i)
 		delete ThreadQueue[i];
+	ThreadQueueMutex->unlock();
 	ThreadQueueMutex->destroy();
 	TaskQueueMutex->destroy();
+	TerminatedMutex->destroy();
 	delete ThreadQueueMutex;
 	delete TaskQueueMutex;
+	delete TerminatedMutex;
 }
 
-bool	ThreadPool_::TaskExec(Task *task)
+void	ThreadPool_::TaskExec(Task *task)
 {
+	AutoMutex	am(TaskQueueMutex);
 	task->function(task->data);
-	return true;
 }
 
 bool	ThreadPool_::ThreadPush()
 {
+	AutoMutex	am(ThreadQueueMutex);
 	return true;
 }
 
 bool	ThreadPool_::ThreadPop()
 {
+	AutoMutex	am(ThreadQueueMutex);
 	return true;
 }
 
-bool	ThreadPool_::QueuePush(void (*function)(void *), void *param)
+void	ThreadPool_::QueuePush(void (*function)(void *), void *param)
 {
 	Task *task = new Task();
 	task->function = function;
 	task->data = param;
-	TaskQueueMutex->lock();
+	AutoMutex	am(TaskQueueMutex);
+//	TaskQueueMutex->lock();
 	TaskQueue.push_back(task);
-	TaskQueueMutex->unlock();
-	return true;
+//	TaskQueueMutex->unlock();
 }
 
 Task	*ThreadPool_::QueuePop(Task *task)
 {
 	TaskQueueMutex->lock();
+//	AutoMutex	am(TaskQueueMutex);
 	while (TaskQueue.empty())
 	{
 		TaskQueueMutex->unlock();
@@ -120,11 +128,13 @@ Task	*ThreadPool_::QueuePop(Task *task)
 
 bool	ThreadPool_::getTerminated()
 {
+	AutoMutex	am(TerminatedMutex);
 	return Terminated;
 }
 
 void	ThreadPool_::setTerminated(bool _terminated)
 {
+	AutoMutex	am(TerminatedMutex);
 	Terminated = _terminated;
 }
 

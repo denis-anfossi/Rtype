@@ -21,7 +21,7 @@ public:
   //  void		resume();
 
 private:
-  IMutex	*mutex;
+//  IMutex	*mutex;
   pthread_t	thread;
 };
 

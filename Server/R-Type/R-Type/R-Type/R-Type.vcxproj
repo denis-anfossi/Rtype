@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AutoMutex.hpp" />
     <ClInclude Include="Command.hpp" />
     <ClInclude Include="DLL\IDynLib.hpp" />
     <ClInclude Include="DLL\IMonster.hpp" />
@@ -33,6 +34,7 @@
     <ClInclude Include="Thread\WinThread.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AutoMutex.cpp" />
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="DLL\LinuxDynLib.cpp" />
     <ClCompile Include="DLL\WindowsDynLib.cpp" />

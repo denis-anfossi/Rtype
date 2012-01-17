@@ -5,7 +5,7 @@
 
 WinThread::WinThread()
 {
-  mutex = new WinMutex();
+//  mutex = new WinMutex();
 }
 
 WinThread::~WinThread()

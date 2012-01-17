@@ -8,6 +8,7 @@
 #endif
 #include	"Player.hpp"
 #include	"DLL/IMonster.hpp"
+#include	"AutoMutex.hpp"
 #include	<vector>
 
 class Game
@@ -26,6 +27,11 @@ public:
 	IMonster	*getMonster(int id) const;
 	std::vector<IMonster *>	getMonsters(void) const;
 	int		getEmptySlot() const;
+
+	IMutex	*idMutex;
+	IMutex	*playersMutex;
+	IMutex	*monstersMutex;
+	IMutex	*sharedLibMutex;
 private:
 	int		id;
 	Player	*player1;

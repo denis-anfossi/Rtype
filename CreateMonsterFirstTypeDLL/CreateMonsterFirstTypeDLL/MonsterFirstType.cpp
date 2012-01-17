@@ -47,6 +47,16 @@ void			MonsterFirstType::update(void)
 
 }
 
+uint32_t		MonsterFirstType::getId(void)
+{
+	return id;
+}
+
+void			MonsterFirstType::setId(uint32_t _id)
+{
+	id = _id;
+}
+
 #define DECLDIR __declspec(dllexport)
 
 extern "C"

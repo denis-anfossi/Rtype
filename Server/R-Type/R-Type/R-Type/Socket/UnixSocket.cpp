@@ -32,7 +32,7 @@ bool     UnixSocket::BindSocket(int family, int port)
 receive     UnixSocket::RecvData(int len, int flags)
 {
   int    check;
-  char   *buffer = new char[len];
+  char   *buffer = new char[len + 1];
   struct sockaddr_in addr_;
   socklen_t sizeaddr = sizeof(addr_);
   receive   rcv;

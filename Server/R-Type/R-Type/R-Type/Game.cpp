@@ -7,6 +7,23 @@ Game::Game(Player *p, int id): id(id), player1(p), player2(0), player3(0), playe
 #else
 	sharedLib = new WindowsDynLib();
 #endif
+#ifdef __linux__
+	idMutex = new UnixMutex();
+	players = new UnixMutex();
+	monstersMutex = new UnixMutex();
+	sharedLibMutex = new UnixMutex();
+#else
+	idMutex = new WinMutex();
+	playersMutex = new WinMutex();
+	monstersMutex = new WinMutex();
+	sharedLibMutex = new WinMutex();
+#endif
+
+	idMutex->init();
+	playersMutex->init();
+	monstersMutex->init();
+	sharedLibMutex->init();
+
 /*	
 	addMonster(RTProtocol::MONSTER_TYPE1);
 	if (monsters.size() > 0)
@@ -16,18 +33,34 @@ Game::Game(Player *p, int id): id(id), player1(p), player2(0), player3(0), playe
 
 Game::~Game(void)
 {
+	monstersMutex->lock();
 	for (unsigned int i = 0; i < monsters.size(); ++i)
 		delete monsters[i];
+	monstersMutex->unlock();
+	sharedLibMutex->lock();
 	delete sharedLib;
+	sharedLibMutex->unlock();
+
+	idMutex->destroy();
+	playersMutex->destroy();
+	monstersMutex->destroy();
+	sharedLibMutex->destroy();
+
+	delete	idMutex;
+	delete	playersMutex;
+	delete	monstersMutex;
+	delete	sharedLibMutex;
 }
 
 void	Game::setId(int _id)
 {
+	AutoMutex	am(idMutex);
 	id = _id;
 }
 
 void	Game::setPlayer(Player *_player, int id)
 {
+	AutoMutex	am(playersMutex);
 	if (id == 0)
 		player1 = _player;
 	else if (id == 1)
@@ -40,6 +73,7 @@ void	Game::setPlayer(Player *_player, int id)
 
 void	Game::setPlayer(Player *_player, RTProtocol::Identifier id)
 {
+	AutoMutex	am(playersMutex);
 	if (id.Id == RTProtocol::PLAYER_1)
 		player1 = _player;
 	else if (id.Id == RTProtocol::PLAYER_2)
@@ -66,27 +100,38 @@ void	Game::addMonster(RTProtocol::MONSTER_TYPE type)
   
   IMonster	*(*external_creator)(int, int);
   
+	AutoMutex	am(sharedLibMutex);
   if (sharedLib->openLib(libName) != NULL)
     {
-      sharedLib->setSymbolName("getInstanceDLL");
-      external_creator = reinterpret_cast<IMonster *	(*)(int, int)>(sharedLib->dlSymb());
-      monsters.push_back(external_creator(100, 100));
-      sharedLib->closeLib();
+		sharedLib->setSymbolName("getInstanceDLL");
+		external_creator = reinterpret_cast<IMonster *	(*)(int, int)>(sharedLib->dlSymb());
+		monstersMutex->lock();
+		monsters.push_back(external_creator(100, 100));
+		monstersMutex->unlock();
+		sharedLib->closeLib();
     }
 }
 
 void	Game::deleteMonster(int id)
 {
-  
+	AutoMutex	am(monstersMutex);
+	for (std::vector<IMonster *>::iterator it = monsters.begin(); it < monsters.end(); ++it)
+		if ((*it)->getId() == id)
+		{
+			delete *it;
+			monsters.erase(it);
+		}
 }
 
 int		Game::getId(void) const
 {
+	AutoMutex	am(idMutex);
 	return id;
 }
 
 Player	*Game::getPlayer(int id) const
 {
+	AutoMutex	am(playersMutex);
 	if (id == 0)
 		return player1;
 	else if (id == 1)
@@ -95,21 +140,24 @@ Player	*Game::getPlayer(int id) const
 		return player3;
 	else if (id == 3)
 		return player4;
-	return 0;
+	return NULL;
 }
 
 IMonster	*Game::getMonster(int id) const
 {
+	AutoMutex	am(monstersMutex);
 	return monsters[id];
 }
 
 std::vector<IMonster *>	Game::getMonsters(void) const
 {
+	AutoMutex	am(monstersMutex);
 	return monsters;
 }
 
 int		Game::getEmptySlot() const
 {
+	AutoMutex	am(playersMutex);
 	if (player1 == 0)
 		return (0);
 	else if (player2 == 0)

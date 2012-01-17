@@ -23,7 +23,7 @@ public:
   //  void		resume();
   
 private:
-  IMutex	*mutex;
+//  IMutex	*mutex;
   HANDLE	thread;
 };
 

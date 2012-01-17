@@ -4,7 +4,7 @@
 
 UnixThread::UnixThread()
 {
-  mutex = new UnixMutex();
+//  mutex = new UnixMutex();
 }
 
 UnixThread::~UnixThread()

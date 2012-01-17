@@ -42,12 +42,13 @@ receive     WinSocket::RecvData(int len, int flags)
 	receive   rcv;
 	if (len > 0)
 	{
-		int    check;
-		char   *buffer = new char[len];
+		std::cout << len << std::endl;
+		char   *buffer = new char[len + 1];
 		struct sockaddr_in addr_;
 		int    sizeaddr = sizeof(addr_);
 
-		check = recvfrom(socket_, buffer, len, flags, (struct sockaddr*) &addr_, &sizeaddr);
+		int check = recvfrom(socket_, buffer, len, flags, (struct sockaddr*) &addr_, &sizeaddr);
+		std::cout << check << std::endl;
 		buffer[check] = 0;
 		rcv.data_ = buffer;
 		rcv.s_rcv = addr_;

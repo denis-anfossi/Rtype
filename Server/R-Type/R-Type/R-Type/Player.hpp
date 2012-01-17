@@ -3,6 +3,7 @@
 
 #include	"Receive.hpp"
 #include	"Protocol.hpp"
+#include	"AutoMutex.hpp"
 
 class Player
 {
@@ -23,6 +24,11 @@ public:
 	int16_t	getX(void) const;
 	int16_t	getY(void) const;
 
+	IMutex	*idMutex;
+	IMutex	*idGameMutex;
+	IMutex	*connectMutex;
+	IMutex	*xMutex;
+	IMutex	*yMutex;
 private:
 	const struct sockaddr_in		rcv;
 	RTProtocol::Identifier	id;

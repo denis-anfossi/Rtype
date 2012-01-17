@@ -3,11 +3,10 @@
 
 #ifdef __linux__
 #include	"Thread/UnixThread.hpp"
-#include	"Thread/UnixMutex.hpp"
 #else
 #include	"Thread\WinThread.hpp"
-#include	"Thread\WinMutex.hpp"
 #endif
+#include	"AutoMutex.hpp"
 
 #include	<queue>
 #include	<deque>
@@ -26,22 +25,15 @@ private:
 	~ThreadPool_(void);
 
 public:
-
 	bool	ThreadPoolInit(int nbThreads);
 	void	ThreadPoolDestroy();
-
-	bool	TaskExec(Task *task);
-
+	void	TaskExec(Task *task);
 	bool	ThreadPush();
 	bool	ThreadPop();
-
-	bool	QueuePush(void (*function)(void *), void *param);
+	void	QueuePush(void (*function)(void *), void *param);
 	Task	*QueuePop(Task *task);
-
 	bool	getTerminated();
 	void	setTerminated(bool _terminated);
-
-//	static	void	*ThreadPoolRoutine(void *param);
 
 	static ThreadPool_	*getInstance(void);
 	static void		kill(void);
@@ -51,11 +43,12 @@ public:
 	IMutex	*ThreadQueueMutex;
 	IMutex	*TaskQueueMutex;
 	IMutex	*TerminatedMutex;
+
 	std::deque<Task *>	TaskQueue;
 	std::deque<IThread *>	ThreadQueue;
 	bool	Terminated;
 
-	static IMutex *_singletonMutex;
+//	static IMutex *_singletonMutex;
 	static ThreadPool_	*_singleton;
 };
 
