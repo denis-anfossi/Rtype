@@ -42,16 +42,32 @@ receive     WinSocket::RecvData(int len, int flags)
 	receive   rcv;
 	if (len > 0)
 	{
-		std::cout << len << std::endl;
+//		std::cout << len << std::endl;
 		char   *buffer = new char[len + 1];
 		struct sockaddr_in addr_;
 		int    sizeaddr = sizeof(addr_);
 
 		int check = recvfrom(socket_, buffer, len, flags, (struct sockaddr*) &addr_, &sizeaddr);
-		std::cout << check << std::endl;
+		//std::cout << "check = " << check  << std::endl;
+		if (flags != MSG_PEEK)
+		{	
+//		std::cout << "check = " << check  << std::endl;
+		//
+		rcv.data_ = NULL;
+		}
+		if (flags == MSG_PEEK && check == -1)
+		{
+//		std::cout << "  - - - -    MSG_PEEK LE PD   - - - - " << check << std::endl;
+		//rcv = NULL;
+		//return rcv;
+		}
+//		if (flags == MSG_PEEK)
+//		std::cout << " +++++ MSG_PEEK LE PD   +++++ " << check << std::endl;
 		buffer[check] = 0;
 		rcv.data_ = buffer;
 		rcv.s_rcv = addr_;
+//		if (check == -1)
+//		std::cout << "FAUT VIRER" << std::endl;
   }
   else
   {

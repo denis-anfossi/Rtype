@@ -77,19 +77,19 @@ void	ThreadPool_::ThreadPoolDestroy()
 
 void	ThreadPool_::TaskExec(Task *task)
 {
-	AutoMutex	am(TaskQueueMutex);
+//	AutoMutex	am(TaskQueueMutex);
 	task->function(task->data);
 }
 
 bool	ThreadPool_::ThreadPush()
 {
-	AutoMutex	am(ThreadQueueMutex);
+//	AutoMutex	am(ThreadQueueMutex);
 	return true;
 }
 
 bool	ThreadPool_::ThreadPop()
 {
-	AutoMutex	am(ThreadQueueMutex);
+//	AutoMutex	am(ThreadQueueMutex);
 	return true;
 }
 
@@ -99,15 +99,12 @@ void	ThreadPool_::QueuePush(void (*function)(void *), void *param)
 	task->function = function;
 	task->data = param;
 	AutoMutex	am(TaskQueueMutex);
-//	TaskQueueMutex->lock();
 	TaskQueue.push_back(task);
-//	TaskQueueMutex->unlock();
 }
 
 Task	*ThreadPool_::QueuePop(Task *task)
 {
 	TaskQueueMutex->lock();
-//	AutoMutex	am(TaskQueueMutex);
 	while (TaskQueue.empty())
 	{
 		TaskQueueMutex->unlock();
@@ -128,13 +125,13 @@ Task	*ThreadPool_::QueuePop(Task *task)
 
 bool	ThreadPool_::getTerminated()
 {
-	AutoMutex	am(TerminatedMutex);
+//	AutoMutex	am(TerminatedMutex);
 	return Terminated;
 }
 
 void	ThreadPool_::setTerminated(bool _terminated)
 {
-	AutoMutex	am(TerminatedMutex);
+//	AutoMutex	am(TerminatedMutex);
 	Terminated = _terminated;
 }
 

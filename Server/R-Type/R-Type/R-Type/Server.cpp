@@ -31,17 +31,13 @@ Server::Server(void)
 	playersMutex = new WinMutex();
 	gamesMutex = new WinMutex();
 #endif
-//	serverMutex->init();
 	threadPoolMutex->init();
 	socketMutex->init();
 	playersMutex->init();
 	gamesMutex->init();
 
-//	serverMutex->lock();
 	AutoMutex	am1(threadPoolMutex);
 	threadPool = ThreadPool_::getInstance();
-//	ThreadPool_::_singletonMutex->init();
-//	serverMutex->unlock();
 #ifdef	__linux__
 	AutoMutex	am2(socketMutex);
 	socket = new UnixSocket();
@@ -64,16 +60,19 @@ Server::~Server(void)
 	socketMutex->lock();
 	delete socket;
 	socketMutex->unlock();
-//  serverMutex->lock();
 	threadPoolMutex->lock();
 	ThreadPool_::kill();
 	threadPoolMutex->unlock();
-//  serverMutex->unlock();
-//  delete serverMutex;
+
 	threadPoolMutex->destroy();
 	socketMutex->destroy();
 	playersMutex->destroy();
 	gamesMutex->destroy();
+
+	delete threadPoolMutex;
+	delete socketMutex;
+	delete playersMutex;
+	delete gamesMutex;
 }
 
 void	Server::init(void)
@@ -93,27 +92,28 @@ void	Server::running(void)
   RTProtocol::Header		*h;
   Command		*c = Command::getInstance();
   
-  threadPoolMutex->lock();
-  threadPool->QueuePush(Server::checkConnectionClients, NULL);
-  threadPool->QueuePush(Server::sendUpdateClients, NULL);
-  threadPoolMutex->unlock();
+	threadPoolMutex->lock();
+	threadPool->QueuePush(Server::checkConnectionClients, NULL);
+	threadPool->QueuePush(Server::sendUpdateClients, NULL);
+	threadPoolMutex->unlock();
   while (1)
     {
-		socketMutex->lock();
+//		socketMutex->lock();
 		receive rHeader = socket->RecvData(sizeof(RTProtocol::Header), MSG_PEEK);
-		socketMutex->unlock();
+//		socketMutex->unlock();
 		h = reinterpret_cast<RTProtocol::Header *>(rHeader.data_);
-		socketMutex->lock();
+//		socketMutex->lock();
+		//if (receive.data_ != NULL)
 		receive rBody = socket->RecvData(h->Size, 0);
-		socketMutex->unlock();
+//		socketMutex->unlock();
 		if (rBody.data_ != NULL)
 		{
 			_command	*recv = new _command();
 			recv->h = h;
 			recv->r = rBody;
-			threadPoolMutex->lock();
+//			threadPoolMutex->lock();
 			threadPool->QueuePush(Command::FindCommand, recv);
-			threadPoolMutex->unlock();
+//			threadPoolMutex->unlock();
 		}
     }
 }
@@ -129,23 +129,21 @@ void	Server::checkConnectionClients(void *param)
 
 	while (1)
     {
-//		s->serverMutex->lock();
 		for (unsigned int i = 0; i < s->getPlayers().size(); ++i)
 		{
-			std::cout << "CHECK CONNECT" << std::endl;
+//			std::cout << "CHECK CONNECT" << std::endl;
 			if (s->getPlayer(i)->getConnect() == true)
 			{
 				s->getPlayer(i)->setConnect(false);
-	      //				c->SendConnection(s->getPlayer(i), RTProtocol::CHECK);
-				std::cout << "CONNECT" << std::endl;
+//				std::cout << "CONNECT" << std::endl;
 			}
 			else if (s->getPlayer(i)->getIdGame() != -1)
 			{
-				std::cout << "DISCONNECT" << std::endl;
+//				std::cout << "DISCONNECT" << std::endl;
 				for (int j = 0; j < 4; ++j)
-					if (s->getGame(s->getPlayer(i))->getPlayer(i) != NULL)
+					if (s->getGame(s->getPlayer(i))->getPlayer(i) != 0)
 					{
-						std::cout << "LOGOUT: " << i << std::endl;
+//						std::cout << "LOGOUT: " << i << std::endl;
 						c->SendConnection(s->getPlayer(i), RTProtocol::LOG_OUT);
 					}
 				s->getGame(s->getPlayer(i))->setPlayer(0, s->getPlayer(i)->getId());
@@ -153,7 +151,6 @@ void	Server::checkConnectionClients(void *param)
 			}
 			else
 				s->deletePlayer(s->getPlayer(i));
-//		s->serverMutex->unlock();
 		}
 #ifdef __linux__
       sleep(12);
@@ -174,13 +171,11 @@ void	Server::sendUpdateClients(void *param)
   while (1)
     {
       gettimeofday(&now, NULL);
-//	  s->serverMutex->lock();
       for (unsigned int i = 0; i < s->getPlayers().size(); ++i)
 		{
 		  if (s->getPlayer(i)->getIdGame() != -1)
 		    c->SendGameData(s->getPlayer(i));
 		}
-//		s->serverMutex->unlock();
       gettimeofday(&diff, NULL);
       diff.tv_sec = diff.tv_sec - now.tv_sec;
       if (diff.tv_sec > 0)
@@ -254,10 +249,8 @@ void	Server::addNewGame(Player *p, int id)
 {
 	AutoMutex	am(gamesMutex);
 	games.push_back(new Game(p, id));
-//  playersMutex->lock();
 	p->setIdGame(id);
 	p->setId(RTProtocol::PLAYER_1);
-//  playersMutex->unlock();
 }
 
 Game	*Server::getGame(void) const
