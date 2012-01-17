@@ -2,6 +2,7 @@
 #define		MONSTER_FIRST_TYPE_HPP
 
 #include	"IMonster.hpp"
+#include	<iostream>
 
 class MonsterFirstType	: public IMonster
 {
@@ -19,7 +20,7 @@ public:
 	virtual uint8_t					getHeight(void);
 	virtual	uint32_t				getId(void);
 	virtual void					setId(uint32_t id);
-
+	virtual void					move();
 private:
 	uint32_t	id;
 	uint8_t		width;

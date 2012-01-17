@@ -17,6 +17,8 @@ int16_t			MonsterFirstType::getY(void)
   return y;
 }
 
+
+
 std::vector<int16_t>	MonsterFirstType::getXFires(void)
 {
   return xFires;
@@ -44,7 +46,14 @@ uint8_t			MonsterFirstType::getHeight(void)
 
 void			MonsterFirstType::update(void)
 {
+	
+	static double ValX;
+	static double ValY;
 
+	y = sinf(ValX);
+	x = ValX;
+	ValX++;
+	ValY++;
 }
 
 uint32_t		MonsterFirstType::getId(void)
@@ -55,6 +64,10 @@ uint32_t		MonsterFirstType::getId(void)
 void			MonsterFirstType::setId(uint32_t _id)
 {
 	id = _id;
+}
+
+void			MonsterFirstType::move()
+{
 }
 
 #define DECLDIR __declspec(dllexport)

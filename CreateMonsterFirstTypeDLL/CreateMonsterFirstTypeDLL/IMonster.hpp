@@ -18,6 +18,7 @@ public:
 	virtual uint8_t getHeight(void) = 0;
 	virtual	uint32_t	getId(void) = 0;
 	virtual void		setId(uint32_t _id) = 0;
+	virtual void		move() = 0;
 };
 
 #if defined DLL_EXPORT
