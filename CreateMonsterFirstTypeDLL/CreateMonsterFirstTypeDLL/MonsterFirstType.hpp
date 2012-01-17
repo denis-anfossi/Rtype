@@ -20,7 +20,8 @@ public:
 	virtual uint8_t					getHeight(void);
 	virtual	uint32_t				getId(void);
 	virtual void					setId(uint32_t id);
-	virtual void					move();
+	virtual void					ActFire();
+	virtual void					UpdateFire();
 private:
 	uint32_t	id;
 	uint8_t		width;
