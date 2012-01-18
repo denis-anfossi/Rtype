@@ -38,7 +38,7 @@ public:
 	Player	*getPlayer(const struct sockaddr_in rcv) const;
 	Player	*getPlayer(const unsigned int it) const;
 	std::vector<Player *>	getPlayers(void) const;
-	Game	*getGame(void) const;
+	Game	*getGame(unsigned int i) const;
 	Game	*getGame(const Player *p) const;
 	std::vector<Game *>		getGames(void) const;
 	int		getAvailableId(void) const;

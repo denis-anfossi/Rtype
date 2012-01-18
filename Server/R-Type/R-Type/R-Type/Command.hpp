@@ -33,11 +33,6 @@ private:
 
 	void	SendGameState(const Player *p, const uint8_t state);
 
-	bool	isNoUpCollision(const struct sockaddr_in& rcv);
-	bool	isNoDownCollision(const struct sockaddr_in& rcv);
-	bool	isNoLeftCollision(const struct sockaddr_in& rcv);
-	bool	isNoRightCollision(const struct sockaddr_in& rcv);
-
 	char	*getNewHeader(uint8_t command, int32_t size);
 
 	static Command	*_singleton;

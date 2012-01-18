@@ -15,11 +15,10 @@ Game::Game(Player *p, int id): id(id), player1(p), player2(0), player3(0), playe
 	idMutex->init();
 	playersMutex->init();
 	monstersMutex->init();
-	
-	addMonster(RTProtocol::MONSTER_TYPE1);
-//	if (monsters.size() > 0)
-//		std::cout << monsters[0]->getX() << std::endl;
 
+	gettimeofday(&old, NULL);
+	gameTimer = 999999;
+	old.tv_sec += 1;
 }
 
 Game::~Game(void)
@@ -36,6 +35,21 @@ Game::~Game(void)
 	delete	idMutex;
 	delete	playersMutex;
 	delete	monstersMutex;
+}
+
+void	Game::update(void)
+{
+	struct timeval	now;
+
+	gettimeofday(&now, NULL);
+	if (old.tv_usec >= now.tv_sec || old.tv_sec > now.tv_sec)
+	{
+		for (unsigned int i = 0; i < monsters.size(); ++i)
+			monsters[i]->update();
+		addMonster(RTProtocol::MONSTER_TYPE1);
+		old.tv_sec = now.tv_sec;
+		old.tv_usec = now.tv_usec + gameTimer--;
+	}
 }
 
 void	Game::setId(int _id)

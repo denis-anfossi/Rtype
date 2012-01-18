@@ -178,7 +178,6 @@ void	Server::checkConnectionClients(void *param)
     {
 		for (unsigned int i = 0; i < s->getPlayers().size(); ++i)
 		{
-//			std::cout << "CHECK CONNECT" << std::endl;
 			if (s->getPlayer(i)->getConnect() == true)
 			{
 				s->getPlayer(i)->setConnect(false);
@@ -217,24 +216,25 @@ void	Server::sendUpdateClients(void *param)
   
   while (1)
     {
-      gettimeofday(&now, NULL);
-      for (unsigned int i = 0; i < s->getPlayers().size(); ++i)
-		{
-		  if (s->getPlayer(i)->getIdGame() != -1)
-		    c->SendGameData(s->getPlayer(i));
-		}
-      gettimeofday(&diff, NULL);
-      diff.tv_sec = diff.tv_sec - now.tv_sec;
-      if (diff.tv_sec > 0)
+		gettimeofday(&now, NULL);
+		for (unsigned int i = 0; i < s->getGames().size(); ++i)
+			if (s->getGame(i) != NULL)
+				s->getGame(i)->update();
+		for (unsigned int i = 0; i < s->getPlayers().size(); ++i)
+			if (s->getPlayer(i)->getIdGame() != -1)
+				c->SendGameData(s->getPlayer(i));
+		gettimeofday(&diff, NULL);
+		diff.tv_sec = diff.tv_sec - now.tv_sec;
+		if (diff.tv_sec > 0)
 		{
 			diff.tv_usec += diff.tv_sec * 1000000;
 			diff.tv_sec = 0;
 		}
-      diff.tv_usec = (1000000 - (diff.tv_usec - now.tv_usec) ) / 120;
+		diff.tv_usec = (1000000 - (diff.tv_usec - now.tv_usec) ) / 120;
 #ifdef __linux__
-      usleep(diff.tv_usec);
+		usleep(diff.tv_usec);
 #else
-      Sleep(diff.tv_usec / 1000);
+		Sleep(diff.tv_usec / 1000);
 #endif
     }
 }
@@ -310,10 +310,12 @@ void	Server::addNewGame(Player *p, int id)
 	p->setId(RTProtocol::PLAYER_1);
 }
 
-Game	*Server::getGame(void) const
+Game	*Server::getGame(unsigned int i) const
 {
 	AutoMutex	am(gamesMutex);
-	return games.back();
+	if (i < games.size())
+		return games[i];
+	return NULL;
 }
 
 Game	*Server::getGame(const Player *p) const

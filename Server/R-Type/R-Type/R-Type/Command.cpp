@@ -158,70 +158,6 @@ void	Command::RecvGameAction(const receive& rBody)
 	s->playersMutex->unlock();
 }
 
-bool	Command::isNoUpCollision(const struct sockaddr_in& rcv)
-{
-	Server *s = Server::getInstance();
-
-	int x = s->getPlayer(rcv)->getX();
-	int y = s->getPlayer(rcv)->getY();
-	for (int i = 0; i < 4; ++i)
-	{
-		Player *p = s->getGame(s->getPlayer(rcv))->getPlayer(i);
-		if (p != s->getPlayer(rcv))
-			if ((y + 1) >= (p->getY() - 55) && x <= p->getX() + 98 && x >= p->getX())
-				return false;
-	}
-	return true;
-}
-
-bool	Command::isNoDownCollision(const struct sockaddr_in& rcv)
-{
-	Server *s = Server::getInstance();
-
-	int x = s->getPlayer(rcv)->getX();
-	int y = s->getPlayer(rcv)->getY();
-	for (int i = 0; i < 4; ++i)
-	{
-		Player *p = s->getGame(s->getPlayer(rcv))->getPlayer(i);
-		if (p != s->getPlayer(rcv))
-			if ((y - 1) <= p->getY() && x <= p->getX() + 98 && x >= p->getX())
-				return false;
-	}
-	return true;
-}
-
-bool	Command::isNoLeftCollision(const struct sockaddr_in& rcv)
-{
-	Server *s = Server::getInstance();
-
-	int x = s->getPlayer(rcv)->getX();
-	int y = s->getPlayer(rcv)->getY();
-	for (int i = 0; i < 4; ++i)
-	{
-		Player *p = s->getGame(s->getPlayer(rcv))->getPlayer(i);
-		if (p != s->getPlayer(rcv))
-			if ((x - 1) <= (p->getX() + 98) && y <= p->getY() && y >= p->getY() - 55)
-				return false;
-	}
-	return true;
-}
-
-bool	Command::isNoRightCollision(const struct sockaddr_in& rcv)
-{
-	Server *s = Server::getInstance();
-
-	int x = s->getPlayer(rcv)->getX();
-	int y = s->getPlayer(rcv)->getY();
-	for (int i = 0; i < 4; ++i)
-	{
-		Player *p = s->getGame(s->getPlayer(rcv))->getPlayer(i);
-		if (p != s->getPlayer(rcv))
-			if ((x + 1) >= p->getX() && y <= p->getY() && y >= p->getY() - 55)
-				return false;
-	}
-	return true;
-}
-
 void	Command::SendConnection(const Player *p, const uint8_t state)
 {
 	std::cout << "SendConnection" << std::endl;
@@ -327,13 +263,9 @@ static int iii = 0;
 		data.alive = 0;
 		std::memcpy(send + len, &data, sizeof(RTProtocol::GameData));
 		len += sizeof(RTProtocol::GameData);
-}
+		}
 
-//	std::cout << "Len TO SEND: " << len << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
 	s->getSocket()->SendData(p->getSockaddr().sin_addr, p->getSockaddr().sin_port, send, len, 0);
-//	std::cout << "Before UnLock GameData" << std::endl;
-//	s->serverMutex->unlock();
-//	std::cout << "After UnLock GameData" << std::endl;
 }
 
 char	*Command::getNewHeader(uint8_t command, int32_t size)
