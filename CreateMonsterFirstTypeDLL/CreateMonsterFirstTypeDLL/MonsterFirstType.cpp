@@ -2,7 +2,9 @@
 #include "MonsterFirstType.hpp"
 
 MonsterFirstType::MonsterFirstType(int x, int y): x(x), y(y)
-{ }
+{
+	type = 0;
+}
 
 MonsterFirstType::~MonsterFirstType(void)
 { }
@@ -44,6 +46,16 @@ uint8_t			MonsterFirstType::getHeight(void)
   return height;
 }
 
+uint8_t			MonsterFirstType::getLife(void)
+{
+	return type;
+}
+
+void			MonsterFirstType::setLife(uint8_t lif)
+{
+	life = lif;
+}
+
 void			MonsterFirstType::update(void)
 {
 	int16_t ValX = getX();
@@ -58,7 +70,7 @@ void			MonsterFirstType::update(void)
 		ValY--;
 	if(mode == 0) 
 		ValY++;
-	ValX++;
+	ValX--;
 	x = ValX;
 	y = ValY;
 }
@@ -74,39 +86,10 @@ void			MonsterFirstType::setId(uint32_t _id)
 }
 
 void			MonsterFirstType::ActFire()
-{
-	int16_t xfire = getX();
-	int16_t yfire = getY();
-	xFires.push_back(xfire);
-	yFires.push_back(yfire);
-}
+{}
 
 void			MonsterFirstType::UpdateFire()
-{
-	std::vector<int16_t>::iterator itx = xFires.begin();
-	std::vector<int16_t>::iterator ity = yFires.begin();
-	while(itx != xFires.end())
-	{
-		std::cout << "J'ai " << xFires.size() << " tires" << std::endl;
-		if(xFires.size() > 0 && yFires.size() > 0)
-		{
-			if(*itx <= 0)
-			{
-				xFires.erase(itx);
-				itx = xFires.begin();
-				ity = yFires.begin();
-			}
-			else
-			{
-				std::cout << "Je decremente les x" << std::endl;
-				*itx -= 1;
-				std::cout << *itx << std::endl;
-				++itx;
-				++ity;
-			}
-		}
-	}
-}
+{}
 
 #define DECLDIR __declspec(dllexport)
 

@@ -18,6 +18,8 @@ public:
 	virtual void					update(void);
 	virtual uint8_t					getWidth(void);
 	virtual uint8_t					getHeight(void);
+	virtual uint8_t					getLife(void);
+	virtual void					setLife(uint8_t);
 	virtual	uint32_t				getId(void);
 	virtual void					setId(uint32_t id);
 	virtual void					ActFire();
@@ -30,6 +32,7 @@ private:
 	uint8_t		fire;
 	int16_t		x;
 	int16_t		y;
+	uint8_t		life;
 	std::vector<int16_t>	xFires;
 	std::vector<int16_t>	yFires;
 };
