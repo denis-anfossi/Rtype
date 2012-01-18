@@ -3,6 +3,7 @@
 
 #include	"IMonster.hpp"
 #include	<iostream>
+#include	<time.h>
 
 class MonsterFirstType	: public IMonster
 {
@@ -33,6 +34,7 @@ private:
 	int16_t		x;
 	int16_t		y;
 	uint8_t		life;
+	uint8_t		modefire;
 	std::vector<int16_t>	xFires;
 	std::vector<int16_t>	yFires;
 };

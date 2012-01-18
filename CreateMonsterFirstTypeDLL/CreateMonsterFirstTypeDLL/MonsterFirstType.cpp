@@ -4,6 +4,17 @@
 MonsterFirstType::MonsterFirstType(int x, int y): x(x), y(y)
 {
 	type = 0;
+	srand(time(NULL));
+	int res = rand() % 850;
+	if(res < 800)
+	{
+		while(res < 800)
+			 res = rand() % 850;
+		this->x = res;
+	}
+	else
+		this->x = res;
+	this->y = rand() % 300;
 }
 
 MonsterFirstType::~MonsterFirstType(void)
