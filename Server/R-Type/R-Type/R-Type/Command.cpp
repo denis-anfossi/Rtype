@@ -26,8 +26,6 @@ Command::~Command(void)
 
 void	Command::FindCommand(void *param)
 {
-//	std::cout << "FindCommand" << std::endl;
-
 	_command *recv = reinterpret_cast<_command *>(param);
 	Command *c = Command::getInstance();
 
@@ -41,8 +39,6 @@ void	Command::FindCommand(void *param)
 
 void	Command::RecvConnection(const receive &rBody)
 {
-//  std::cout << "RecvConnection" << std::endl;
-
   RTProtocol::Connection		*h = reinterpret_cast<RTProtocol::Connection *>(rBody.data_ + sizeof(RTProtocol::Header));
   if (h->StateConnection == RTProtocol::LOG_IN)
     RecvConnectionLogIn(rBody.s_rcv);
@@ -58,17 +54,11 @@ void	Command::RecvConnectionLogIn(const struct sockaddr_in& rcv)
 
 	Server *s = Server::getInstance();
 
-//	std::cout << "Before Lock ConnectionLogIn: " << GetCurrentThreadId() << std::endl;
-//	s->serverMutex->lock();
-//	std::cout << "After Lock ConnectionLogIn: " << GetCurrentThreadId() << std::endl;
 	if (s->getPlayer(rcv) == 0)
 	{
 		s->addNewPlayer(rcv);
 		SendConnection(s->getPlayer(rcv), RTProtocol::LOG_IN);
 	}
-//	std::cout << "Before UnLock ConnectionLogIn: " << GetCurrentThreadId() << std::endl;
-//	s->serverMutex->unlock();
-//	std::cout << "After UnLock ConnectionLogIn: " << GetCurrentThreadId() << std::endl;
 }
 
 void	Command::RecvConnectionLogOut(const struct sockaddr_in& rcv)
@@ -77,9 +67,6 @@ void	Command::RecvConnectionLogOut(const struct sockaddr_in& rcv)
 
 	Server *s = Server::getInstance();
 
-//	std::cout << "Before Lock ConnectionLogOut: " << GetCurrentThreadId() << std::endl;
-//	s->serverMutex->lock();
-//	std::cout << "After Lock ConnectionLogOut: " << GetCurrentThreadId() << std::endl;
 	if (s->getPlayer(rcv) != 0)
 	{
 		if (s->getPlayer(rcv)->getIdGame() != -1)
@@ -92,9 +79,6 @@ void	Command::RecvConnectionLogOut(const struct sockaddr_in& rcv)
 		SendConnection(s->getPlayer(rcv), RTProtocol::LOG_OUT);
 		s->deletePlayer(s->getPlayer(rcv));
 	}
-//	std::cout << "Before UnLock ConnectionLogOut: " << GetCurrentThreadId() << std::endl;
-//	s->serverMutex->unlock();
-//	std::cout << "After UnLock ConnectionLogOut: " << GetCurrentThreadId() << std::endl;
 }
 
 void	Command::RecvConnectionCheck(const struct sockaddr_in& rcv)
@@ -103,16 +87,8 @@ void	Command::RecvConnectionCheck(const struct sockaddr_in& rcv)
 
 	Server *s = Server::getInstance();
 
-//	std::cout << "Before Lock ConnectionCheck" << std::endl;
-//	s->serverMutex->lock();
-//	std::cout << "After Lock Connection Check" << std::endl;
 	if (s->getPlayer(rcv) != 0)
-	{
 		s->getPlayer(rcv)->setConnect(true);
-	}
-//	std::cout << "Before UnLock ConnectionCheck" << std::endl;
-//	s->serverMutex->unlock();
-//	std::cout << "After UnLock Connection Check" << std::endl;
 }
 
 void	Command::RecvRunMode(const receive& rBody)
@@ -132,9 +108,6 @@ void	Command::RecvRunModeCreate(const struct sockaddr_in& rcv)
 
 	Server *s = Server::getInstance();
 
-//	std::cout << "Before Lock RunModeCreate" << std::endl;
-//	s->serverMutex->lock();
-//	std::cout << "After Lock RunModeCreate" << std::endl;
 
 	if (s->getPlayer(rcv)->getIdGame() == -1)
 	{
@@ -142,9 +115,6 @@ void	Command::RecvRunModeCreate(const struct sockaddr_in& rcv)
 		std::cout << "SEND GAME STATE" << std::endl;
 		SendGameState(s->getPlayer(rcv), RTProtocol::START);
 	}
-//	std::cout << "Before UnLock RunModeCreate: " << GetCurrentThreadId() << std::endl;
-//	s->serverMutex->unlock();
-//	std::cout << "After UnLock RunModeCreate: " << GetCurrentThreadId() << std::endl;
 }
 
 void	Command::RecvRunModeJoin(const struct sockaddr_in& rcv)
@@ -153,9 +123,6 @@ void	Command::RecvRunModeJoin(const struct sockaddr_in& rcv)
 
 	Server *s = Server::getInstance();
 
-//	std::cout << "Before Lock RunModeJoin: " << GetCurrentThreadId() << std::endl;
-//	s->serverMutex->lock();
-//	std::cout << "After Lock RunModeJoin: " << GetCurrentThreadId() << std::endl;
 	if (s->getPlayer(rcv)->getIdGame() == -1)
 	{
 		if (s->getAvailableSlot() != 0)
@@ -170,15 +137,10 @@ void	Command::RecvRunModeJoin(const struct sockaddr_in& rcv)
 			RecvRunModeCreate(rcv);
 		}
 	}
-//	std::cout << "Before UnLock RunModeJoin: " << GetCurrentThreadId() << std::endl;
-//	s->serverMutex->unlock();
-//	std::cout << "After UnLock RunModeJoin: " << GetCurrentThreadId() << std::endl;
 }
 
 void	Command::RecvGameAction(const receive& rBody)
 {
-//	std::cout << "RecvGameAction" << std::endl;
-
 	Server *s = Server::getInstance();
 	RTProtocol::GameAction	*h = reinterpret_cast<RTProtocol::GameAction *>(rBody.data_ + sizeof(RTProtocol::Header));
 	s->playersMutex->lock();
@@ -291,21 +253,23 @@ void	Command::SendGameState(const Player *p, const uint8_t state)
 
 void	Command::SendGameData(const Player *p)
 {
-//	std::cout << "SendGameData" << std::endl;
-
 	char	*send;
 	RTProtocol::GameData data;
 	Server *s = Server::getInstance();
 
-//	std::cout << "Before Lock GameData" << std::endl;
-//	s->serverMutex->lock();
-//	std::cout << "After Lock GameData" << std::endl;
 	int len = 0;
 	for (int i = 0; i < 4; ++i)
 		if (s->getGame(p)->getPlayer(i) != 0)
 			len += sizeof(RTProtocol::GameData);
 	for (unsigned int i = 0; i < s->getGame(p)->getMonsters().size(); ++i)
 		len += sizeof(RTProtocol::GameData);
+/* C"EST EN DUR !!!*/
+len += sizeof(RTProtocol::GameData);
+len += sizeof(RTProtocol::GameData);
+static int iii = 0;
+	if (iii++ == 300)
+		len += sizeof(RTProtocol::GameData);
+/* C"EST EN DUR !!!*/
 	send = getNewHeader(RTProtocol::GAME_DATA, sizeof(RTProtocol::Header) + len);
 	len = sizeof(RTProtocol::Header);
 	for (int i = 0; i < 4; ++i)
@@ -322,15 +286,49 @@ void	Command::SendGameData(const Player *p)
 		}
 	for (unsigned int i = 0; i < s->getGame(p)->getMonsters().size(); ++i)
 	{
-		data.ExternType = RTProtocol::MONSTER;
-		data.InternType = s->getGame(p)->getMonster(i)->getType();
-		data.Id = s->getGame(p)->getMonster(i)->getId();
+ 		data.ExternType = RTProtocol::MONSTER;
+//		data.InternType = s->getGame(p)->getMonster(i)->getType();
+//		data.Id = s->getGame(p)->getMonster(i)->getId();
+/* C"EST EN DUR !!!*/
+		data.InternType = RTProtocol::MONSTER_TYPE1;
+		data.Id = 10;
+/* C"EST EN DUR !!!*/
 		data.x = s->getGame(p)->getMonster(i)->getX();
 		data.y = s->getGame(p)->getMonster(i)->getY();
 		data.alive = 1;
 		std::memcpy(send + len, &data, sizeof(RTProtocol::GameData));
 		len += sizeof(RTProtocol::GameData);
 	}
+		data.ExternType = RTProtocol::FIRE;
+		data.InternType = RTProtocol::FIRE_PLAYER;
+		data.Id = 0;
+		data.x = 50;
+		data.y = 50;
+		data.alive = 1;
+		std::memcpy(send + len, &data, sizeof(RTProtocol::GameData));
+		len += sizeof(RTProtocol::GameData);
+		data.ExternType = RTProtocol::FIRE;
+		data.InternType = RTProtocol::FIRE_MONSTER;
+		data.Id = 1;
+		data.x = 55;
+		data.y = 55;
+		data.alive = 1;
+		std::memcpy(send + len, &data, sizeof(RTProtocol::GameData));
+		len += sizeof(RTProtocol::GameData);
+	static int ii = 0;
+		if (ii++ == 300)
+		{
+		std::cout << "MORT" << std::endl;
+		data.ExternType = RTProtocol::MONSTER;
+		data.InternType = RTProtocol::MONSTER_TYPE2;
+		data.Id = 1;
+		data.x = 50;
+		data.y = 300;
+		data.alive = 0;
+		std::memcpy(send + len, &data, sizeof(RTProtocol::GameData));
+		len += sizeof(RTProtocol::GameData);
+}
+
 //	std::cout << "Len TO SEND: " << len << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
 	s->getSocket()->SendData(p->getSockaddr().sin_addr, p->getSockaddr().sin_port, send, len, 0);
 //	std::cout << "Before UnLock GameData" << std::endl;

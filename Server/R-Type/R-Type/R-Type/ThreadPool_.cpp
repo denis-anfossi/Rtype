@@ -2,13 +2,7 @@
 #include <iostream>
 
 ThreadPool_	*ThreadPool_::_singleton = NULL;
-/*
-#ifdef __linux__
-IMutex *ThreadPool_::_singletonMutex = new UnixMutex();
-#else
-IMutex *ThreadPool_::_singletonMutex = new WinMutex();
-#endif
-*/
+
 ThreadPool_	*ThreadPool_::getInstance()
 {
   if (_singleton == NULL)

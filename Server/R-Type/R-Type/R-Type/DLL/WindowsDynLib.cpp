@@ -24,8 +24,8 @@ WindowsDynLib::~WindowsDynLib()
 
 void *WindowsDynLib::openLib(std::string libName)
 {
-	std::wstring tmp = StringToWString(libName);
-	HandleOpen = LoadLibrary(tmp.c_str());
+//	std::wstring tmp = StringToWString(libName);
+	HandleOpen = LoadLibrary(libName.c_str());
 
 	return HandleOpen;
 }

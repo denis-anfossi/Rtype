@@ -95,7 +95,13 @@ namespace RTProtocol
 	enum			MONSTER_TYPE
 	{
 		MONSTER_TYPE1 = 0,
-		MONSTER_TYPE2,
+		MONSTER_TYPE2
+	};
+
+	enum			FIRE_TYPE
+	{
+		FIRE_PLAYER	= 0,
+		FIRE_MONSTER
 	};
 
 	struct			GameData

@@ -23,26 +23,42 @@ Server::Server(void)
 #ifdef __linux__
 	threadPoolMutex = new UnixMutex();
 	socketMutex = new UnixMutex();
+	sharedMonsterFirstTypeMutex = new UnixMutex();
+	sharedMonsterSecondTypeMutex = new UnixMutex();
 	playersMutex = new UnixMutex();
 	gamesMutex = new UnixMutex();
 #else
 	threadPoolMutex = new WinMutex();
 	socketMutex = new WinMutex();
+	sharedMonsterFirstTypeMutex = new WinMutex();
+	sharedMonsterSecondTypeMutex = new WinMutex();
 	playersMutex = new WinMutex();
 	gamesMutex = new WinMutex();
 #endif
 	threadPoolMutex->init();
 	socketMutex->init();
+	sharedMonsterFirstTypeMutex->init();
+	sharedMonsterSecondTypeMutex->init();
 	playersMutex->init();
 	gamesMutex->init();
 
 	AutoMutex	am1(threadPoolMutex);
 	threadPool = ThreadPool_::getInstance();
-#ifdef	__linux__
+
+	AutoMutex	am3(sharedMonsterFirstTypeMutex);
+	AutoMutex	am4(sharedMonsterSecondTypeMutex);
+#ifdef __linux__
+	sharedLibMonsterFirstType = new LinuxDynLib();
+	sharedLibMonsterSecondType = new LinuxDynLib();
+#else
+	sharedLibMonsterFirstType = new WindowsDynLib();
+	sharedLibMonsterSecondType = new WindowsDynLib();
+#endif
+
 	AutoMutex	am2(socketMutex);
+#ifdef	__linux__
 	socket = new UnixSocket();
 #else
-	AutoMutex	am2(socketMutex);
 	socket = new WinSocket();
 #endif
 }
@@ -60,26 +76,57 @@ Server::~Server(void)
 	socketMutex->lock();
 	delete socket;
 	socketMutex->unlock();
+	sharedMonsterFirstTypeMutex->lock();
+	sharedLibMonsterFirstType->closeLib();
+	delete sharedLibMonsterFirstType;
+	sharedMonsterFirstTypeMutex->unlock();
+	sharedMonsterSecondTypeMutex->lock();
+	sharedLibMonsterSecondType->closeLib();
+	delete sharedLibMonsterSecondType;
+	sharedMonsterSecondTypeMutex->unlock();
 	threadPoolMutex->lock();
 	ThreadPool_::kill();
 	threadPoolMutex->unlock();
 
 	threadPoolMutex->destroy();
 	socketMutex->destroy();
+	sharedMonsterFirstTypeMutex->destroy();
+	sharedMonsterSecondTypeMutex->destroy();
 	playersMutex->destroy();
 	gamesMutex->destroy();
 
 	delete threadPoolMutex;
 	delete socketMutex;
+	delete sharedMonsterFirstTypeMutex;
+	delete sharedMonsterSecondTypeMutex;
 	delete playersMutex;
 	delete gamesMutex;
 }
 
 void	Server::init(void)
-{
+{	
 	threadPoolMutex->lock();
 	threadPool->ThreadPoolInit(10);
 	threadPoolMutex->unlock();
+	std::string	libName1 = "DLL/CreateMonsterFirstTypeDLL";
+	std::string libName2 = "DLL/CreateMonsterSecondTypeDLL";
+#ifdef __linux__
+	libName1 += ".so";
+	libName2 += ".so";
+#else
+	libName1 += ".dll";
+	libName2 += ".dll";
+#endif
+
+	AutoMutex	am2(sharedMonsterFirstTypeMutex);
+	if (!(sharedLibMonsterFirstType->openLib(libName1)))
+		throw std::exception();
+//	AutoMutex	am3(sharedMonsterSecondTypeMutex);
+//	if (!(sharedLibMonsterSecondType->openLib(libName2)))
+//		throw std::exception();
+	sharedLibMonsterFirstType->setSymbolName("getInstanceDLL");
+//	sharedLibMonsterSecondType->setSymbolName("getInstanceDLL");
+
 	AutoMutex	am(socketMutex);
 	if (!(socket->CreateSocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)))
 		throw std::exception();
@@ -190,6 +237,16 @@ void	Server::sendUpdateClients(void *param)
       Sleep(diff.tv_usec / 1000);
 #endif
     }
+}
+
+IDynLib	*Server::getSharedLibMonsterFirstType(void) const
+{
+	return sharedLibMonsterFirstType;
+}
+
+IDynLib	*Server::getSharedLibMonsterSecondType(void) const
+{
+	return sharedLibMonsterSecondType;
 }
 
 void	Server::addNewPlayer(const struct sockaddr_in rcv)

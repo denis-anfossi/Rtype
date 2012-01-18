@@ -3,32 +3,23 @@
 Game::Game(Player *p, int id): id(id), player1(p), player2(0), player3(0), player4(0)
 {
 #ifdef __linux__
-	sharedLib = new LinuxDynLib();
-#else
-	sharedLib = new WindowsDynLib();
-#endif
-#ifdef __linux__
 	idMutex = new UnixMutex();
 	players = new UnixMutex();
 	monstersMutex = new UnixMutex();
-	sharedLibMutex = new UnixMutex();
 #else
 	idMutex = new WinMutex();
 	playersMutex = new WinMutex();
 	monstersMutex = new WinMutex();
-	sharedLibMutex = new WinMutex();
 #endif
 
 	idMutex->init();
 	playersMutex->init();
 	monstersMutex->init();
-	sharedLibMutex->init();
-
-/*	
+	
 	addMonster(RTProtocol::MONSTER_TYPE1);
-	if (monsters.size() > 0)
-		std::cout << monsters[0]->getX() << std::endl;
-*/
+//	if (monsters.size() > 0)
+//		std::cout << monsters[0]->getX() << std::endl;
+
 }
 
 Game::~Game(void)
@@ -37,19 +28,14 @@ Game::~Game(void)
 	for (unsigned int i = 0; i < monsters.size(); ++i)
 		delete monsters[i];
 	monstersMutex->unlock();
-	sharedLibMutex->lock();
-	delete sharedLib;
-	sharedLibMutex->unlock();
 
 	idMutex->destroy();
 	playersMutex->destroy();
 	monstersMutex->destroy();
-	sharedLibMutex->destroy();
 
 	delete	idMutex;
 	delete	playersMutex;
 	delete	monstersMutex;
-	delete	sharedLibMutex;
 }
 
 void	Game::setId(int _id)
@@ -86,30 +72,16 @@ void	Game::setPlayer(Player *_player, RTProtocol::Identifier id)
 
 void	Game::addMonster(RTProtocol::MONSTER_TYPE type)
 {
-  std::string	libName;
-  if (type == RTProtocol::MONSTER_TYPE1)
-    libName = "DLL/CreateMonsterFirstTypeDLL";
-  else if (type == RTProtocol::MONSTER_TYPE2)
-    libName = "DLL/CreateMonsterFirstTypeDLL";
-  
-#ifdef __linux__
-  libName += ".so";
-#else
-  libName += ".dll";
-#endif
-  
-  IMonster	*(*external_creator)(int, int);
-  
-	AutoMutex	am(sharedLibMutex);
-  if (sharedLib->openLib(libName) != NULL)
-    {
-		sharedLib->setSymbolName("getInstanceDLL");
-		external_creator = reinterpret_cast<IMonster *	(*)(int, int)>(sharedLib->dlSymb());
-		monstersMutex->lock();
-		monsters.push_back(external_creator(100, 100));
-		monstersMutex->unlock();
-		sharedLib->closeLib();
-    }
+	IMonster	*(*external_creator)(int, int);  
+	Server *s = Server::getInstance();
+
+	if (type == RTProtocol::MONSTER_TYPE1)
+		external_creator = reinterpret_cast<IMonster *	(*)(int, int)>(s->getSharedLibMonsterFirstType()->dlSymb());
+	else if (type == RTProtocol::MONSTER_TYPE2)
+		external_creator = reinterpret_cast<IMonster *	(*)(int, int)>(s->getSharedLibMonsterSecondType()->dlSymb());
+	monstersMutex->lock();
+	monsters.push_back(external_creator(100, 100));
+	monstersMutex->unlock();
 }
 
 void	Game::deleteMonster(int id)

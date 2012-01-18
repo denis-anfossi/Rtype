@@ -1,15 +1,13 @@
 #ifndef		GAME_HPP
 #define		GAME_HPP
 
-#ifdef __linux__
-#include	"DLL/LinuxDynLib.hpp"
-#else
-#include	"DLL\WindowsDynLib.hpp"
-#endif
 #include	"Player.hpp"
 #include	"DLL/IMonster.hpp"
 #include	"AutoMutex.hpp"
+#include	"Server.hpp"
 #include	<vector>
+
+class Server;
 
 class Game
 {
@@ -31,7 +29,7 @@ public:
 	IMutex	*idMutex;
 	IMutex	*playersMutex;
 	IMutex	*monstersMutex;
-	IMutex	*sharedLibMutex;
+//	IMutex	*sharedLibMutex;
 private:
 	int		id;
 	Player	*player1;

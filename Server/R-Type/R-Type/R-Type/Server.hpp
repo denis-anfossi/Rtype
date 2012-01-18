@@ -1,6 +1,11 @@
 #ifndef		SERVER_HPP
 #define		SERVER_HPP
 
+#ifdef __linux__
+#include	"DLL/LinuxDynLib.hpp"
+#else
+#include	"DLL\WindowsDynLib.hpp"
+#endif
 #ifdef	__linux__
 #include	"Socket/UnixSocket.hpp"
 #include	<sys/time.h>
@@ -18,6 +23,7 @@
 #include	<vector>
 
 class	Command;
+class	Game;
 
 class	Server
 {
@@ -27,6 +33,8 @@ public:
 
 	void	addNewPlayer(const struct sockaddr_in rcv);
 	void	addNewGame(Player *p, int id);
+	IDynLib	*getSharedLibMonsterFirstType(void) const;
+	IDynLib	*getSharedLibMonsterSecondType(void) const;
 	Player	*getPlayer(const struct sockaddr_in rcv) const;
 	Player	*getPlayer(const unsigned int it) const;
 	std::vector<Player *>	getPlayers(void) const;
@@ -47,9 +55,10 @@ public:
 
 	IMutex		*threadPoolMutex;
 	IMutex		*socketMutex;
+	IMutex		*sharedMonsterFirstTypeMutex;
+	IMutex		*sharedMonsterSecondTypeMutex;
 	IMutex		*playersMutex;
 	IMutex		*gamesMutex;
-//	IMutex		*serverMutex;
 private:
 	Server(void);
 	~Server(void);
@@ -58,6 +67,8 @@ private:
 
 	ThreadPool_	*threadPool;
 	ISocket		*socket;
+	IDynLib		*sharedLibMonsterFirstType;
+	IDynLib		*sharedLibMonsterSecondType;
 	std::vector<Player *>	players;
 	std::vector<Game *>		games;
 };
