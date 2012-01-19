@@ -4,6 +4,7 @@
 MonsterFirstType::MonsterFirstType(int x, int y): x(x), y(y)
 {
 	type = 0;
+	life = 1;
 	srand(time(NULL));
 	int res = rand() % 850;
 	if(res < 800)
@@ -59,7 +60,7 @@ uint8_t			MonsterFirstType::getHeight(void)
 
 uint8_t			MonsterFirstType::getLife(void)
 {
-	return type;
+	return life;
 }
 
 void			MonsterFirstType::setLife(uint8_t lif)
@@ -81,7 +82,7 @@ void			MonsterFirstType::update(void)
 		ValY--;
 	if(mode == 0) 
 		ValY++;
-	ValX--;
+	ValX -= 10;
 	x = ValX;
 	y = ValY;
 }

@@ -4,6 +4,7 @@
 MonsterSecondType::MonsterSecondType(int x, int y)
 { 
 	type = 1;
+	life = 1;
 	srand(time(NULL));
 	modefire = rand() % 2;
 	int res = rand() % 850;
@@ -33,7 +34,7 @@ int16_t			MonsterSecondType::getY(void)
 
 uint8_t			MonsterSecondType::getLife(void)
 {
-	return type;
+	return life;
 }
 
 void			MonsterSecondType::setLife(uint8_t lif)
@@ -68,13 +69,11 @@ uint8_t			MonsterSecondType::getHeight(void)
 
 void			MonsterSecondType::update(void)
 {
-	double tmp;
 	int16_t ValY = getY();
 	int16_t ValX = getX();
 	static int mode = 1;
 	static int foot = 5;
 
-	std::cout << "Le mode fire est " << (int)modefire << std::endl;
 	if(modefire == 1)
 	{
 		if(x >= 300)
