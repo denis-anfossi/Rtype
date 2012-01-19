@@ -83,7 +83,7 @@ void	Command::RecvConnectionLogOut(const struct sockaddr_in& rcv)
 
 void	Command::RecvConnectionCheck(const struct sockaddr_in& rcv)
 {
-	std::cout << "RecvConnectionCheck: " << std::endl;
+//	std::cout << "RecvConnectionCheck: " << std::endl;
 
 	Server *s = Server::getInstance();
 
@@ -112,7 +112,6 @@ void	Command::RecvRunModeCreate(const struct sockaddr_in& rcv)
 	if (s->getPlayer(rcv)->getIdGame() == -1)
 	{
 		s->addNewGame(s->getPlayer(rcv), s->getAvailableId());
-		std::cout << "SEND GAME STATE" << std::endl;
 		SendGameState(s->getPlayer(rcv), RTProtocol::START);
 	}
 }
@@ -154,6 +153,8 @@ void	Command::RecvGameAction(const receive& rBody)
 			s->getPlayer(rBody.s_rcv)->setX(s->getPlayer(rBody.s_rcv)->getX() - 15);
 		else if (h->Action == RTProtocol::RIGHT && s->getPlayer(rBody.s_rcv)->getX() <= 692)
 			s->getPlayer(rBody.s_rcv)->setX(s->getPlayer(rBody.s_rcv)->getX() + 15);
+		else if (h->Action == RTProtocol::FIRE)
+			s->getPlayer(rBody.s_rcv)->addFire();
 	}
 	s->playersMutex->unlock();
 }
@@ -198,13 +199,16 @@ void	Command::SendGameData(const Player *p)
 		if (s->getGame(p)->getPlayer(i) != 0)
 			len += sizeof(RTProtocol::GameData);
 	for (unsigned int i = 0; i < s->getGame(p)->getMonsters().size(); ++i)
+	{
 		len += sizeof(RTProtocol::GameData);
-/* C"EST EN DUR !!!*/
+/*		for (unsigned int j = 0; j < s->getGame(p)->getMonster(i)->getXFires().size(); ++j)
+		{
+			len += sizeof(RTProtocol::GameData);
+		}
+*/	}
+/* C"EST EN DUR !!!*//*
 len += sizeof(RTProtocol::GameData);
 len += sizeof(RTProtocol::GameData);
-static int iii = 0;
-	if (iii++ == 300)
-		len += sizeof(RTProtocol::GameData);
 /* C"EST EN DUR !!!*/
 	send = getNewHeader(RTProtocol::GAME_DATA, sizeof(RTProtocol::Header) + len);
 	len = sizeof(RTProtocol::Header);
@@ -223,19 +227,31 @@ static int iii = 0;
 	for (unsigned int i = 0; i < s->getGame(p)->getMonsters().size(); ++i)
 	{
  		data.ExternType = RTProtocol::MONSTER;
-//		data.InternType = s->getGame(p)->getMonster(i)->getType();
-//		data.Id = s->getGame(p)->getMonster(i)->getId();
-/* C"EST EN DUR !!!*/
-		data.InternType = RTProtocol::MONSTER_TYPE1;
-		data.Id = 10;
-/* C"EST EN DUR !!!*/
+		data.InternType = s->getGame(p)->getMonster(i)->getType();
+		data.Id = s->getGame(p)->getMonster(i)->getId();
 		data.x = s->getGame(p)->getMonster(i)->getX();
 		data.y = s->getGame(p)->getMonster(i)->getY();
-		data.alive = 1;
+		if (s->getGame(p)->getMonster(i)->getLife() > 0)
+			data.alive = 1;
+		else
+			data.alive = 0;
 		std::memcpy(send + len, &data, sizeof(RTProtocol::GameData));
 		len += sizeof(RTProtocol::GameData);
-	}
-		data.ExternType = RTProtocol::FIRE;
+/*		std::vector<int16_t>	xFires = s->getGame(p)->getMonster(i)->getXFires();
+		std::vector<int16_t>	yFires = s->getGame(p)->getMonster(i)->getYFires();
+		for (unsigned int j = 0; j < xFires.size(); ++j)
+		{
+			data.ExternType = RTProtocol::FIRE;
+			data.InternType = RTProtocol::FIRE_MONSTER;
+//			data.Id = 
+			data.x = xFires[j];
+			data.y = yFires[j];
+//			data.alive =
+			len += sizeof(RTProtocol::GameData);
+		}
+*/	}
+//	std::cout << s->getGame(p)->getMonsters().size() << std::endl;
+/*		data.ExternType = RTProtocol::FIRE;
 		data.InternType = RTProtocol::FIRE_PLAYER;
 		data.Id = 0;
 		data.x = 50;
@@ -251,27 +267,12 @@ static int iii = 0;
 		data.alive = 1;
 		std::memcpy(send + len, &data, sizeof(RTProtocol::GameData));
 		len += sizeof(RTProtocol::GameData);
-	static int ii = 0;
-		if (ii++ == 300)
-		{
-		std::cout << "MORT" << std::endl;
-		data.ExternType = RTProtocol::MONSTER;
-		data.InternType = RTProtocol::MONSTER_TYPE2;
-		data.Id = 1;
-		data.x = 50;
-		data.y = 300;
-		data.alive = 0;
-		std::memcpy(send + len, &data, sizeof(RTProtocol::GameData));
-		len += sizeof(RTProtocol::GameData);
-		}
-
+*/
 	s->getSocket()->SendData(p->getSockaddr().sin_addr, p->getSockaddr().sin_port, send, len, 0);
 }
 
 char	*Command::getNewHeader(uint8_t command, int32_t size)
 {
-//	std::cout << "getNewHeader" << std::endl;
-
 	RTProtocol::Header	h;
 
 	h.Command = command;

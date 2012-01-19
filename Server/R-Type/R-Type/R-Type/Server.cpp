@@ -109,7 +109,7 @@ void	Server::init(void)
 	threadPool->ThreadPoolInit(10);
 	threadPoolMutex->unlock();
 	std::string	libName1 = "DLL/CreateMonsterFirstTypeDLL";
-	std::string libName2 = "DLL/CreateMonsterSecondTypeDLL";
+	std::string libName2 = "DLL/CreateMonsterSecondType";
 #ifdef __linux__
 	libName1 += ".so";
 	libName2 += ".so";
@@ -121,11 +121,11 @@ void	Server::init(void)
 	AutoMutex	am2(sharedMonsterFirstTypeMutex);
 	if (!(sharedLibMonsterFirstType->openLib(libName1)))
 		throw std::exception();
-//	AutoMutex	am3(sharedMonsterSecondTypeMutex);
-//	if (!(sharedLibMonsterSecondType->openLib(libName2)))
-//		throw std::exception();
+	AutoMutex	am3(sharedMonsterSecondTypeMutex);
+	if (!(sharedLibMonsterSecondType->openLib(libName2)))
+		throw std::exception();
 	sharedLibMonsterFirstType->setSymbolName("getInstanceDLL");
-//	sharedLibMonsterSecondType->setSymbolName("getInstanceDLL");
+	sharedLibMonsterSecondType->setSymbolName("getInstanceDLL");
 
 	AutoMutex	am(socketMutex);
 	if (!(socket->CreateSocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)))
@@ -223,6 +223,9 @@ void	Server::sendUpdateClients(void *param)
 		for (unsigned int i = 0; i < s->getPlayers().size(); ++i)
 			if (s->getPlayer(i)->getIdGame() != -1)
 				c->SendGameData(s->getPlayer(i));
+		for (unsigned int i = 0; i < s->getGames().size(); ++i)
+			if (s->getGame(i) != NULL)
+				s->getGame(i)->update2();
 		gettimeofday(&diff, NULL);
 		diff.tv_sec = diff.tv_sec - now.tv_sec;
 		if (diff.tv_sec > 0)

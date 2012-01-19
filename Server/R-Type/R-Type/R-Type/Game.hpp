@@ -16,6 +16,7 @@ public:
 	~Game(void);
 
 	void					update();
+	void					update2();
 	void					setId(int _id);
 	void					setPlayer(Player *_player, int id);
 	void					setPlayer(Player *_player, RTProtocol::Identifier id);
@@ -38,7 +39,10 @@ private:
 	Player	*player4;
 	std::vector<IMonster *>	monsters;
 	struct timeval	old;
+	struct timeval	old2;
 	long			gameTimer;
+	long			gameTimer2;
+	int	idMonsters;
 };
 
 #endif		/* GAME_HPP */
