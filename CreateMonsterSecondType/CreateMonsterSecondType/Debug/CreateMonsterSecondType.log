@@ -1,9 +1,10 @@
-﻿Build started 1/19/2012 10:59:53 AM.
+﻿Build started 1/21/2012 6:29:12 AM.
      1>Project "C:\Users\xMalloc\Desktop\R-Type\Project\Project\R-Type\Rtype\CreateMonsterSecondType\CreateMonsterSecondType\CreateMonsterSecondType.vcxproj" on node 2 (clean target(s)).
      1>_PrepareForClean:
          Deleting file "Debug\CreateMonsterSecondType.lastbuildstate".
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppClean.targets(74,5): warning : Access to the path 'C:\USERS\XMALLOC\DESKTOP\R-TYPE\PROJECT\PROJECT\R-TYPE\RTYPE\CREATEMONSTERSECONDTYPE\DEBUG\CREATEMONSTERSECONDTYPE.PDB' is denied.
      1>Done Building Project "C:\Users\xMalloc\Desktop\R-Type\Project\Project\R-Type\Rtype\CreateMonsterSecondType\CreateMonsterSecondType\CreateMonsterSecondType.vcxproj" (clean target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:01.42
+Time Elapsed 00:00:00

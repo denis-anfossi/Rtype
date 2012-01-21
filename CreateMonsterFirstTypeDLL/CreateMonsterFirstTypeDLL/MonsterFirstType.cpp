@@ -3,19 +3,19 @@
 
 MonsterFirstType::MonsterFirstType(int x, int y): x(x), y(y)
 {
-	type = 0;
-	life = 1;
-	srand(time(NULL));
-	int res = rand() % 850;
-	if(res < 800)
-	{
-		while(res < 800)
-			 res = rand() % 850;
-		this->x = res;
-	}
-	else
-		this->x = res;
-	this->y = rand() % 300;
+  type = 0;
+  life = 1;
+  srand(time(NULL));
+  int res = rand() % 850;
+  if(res < 800)
+    {
+      while(res < 800)
+	res = rand() % 850;
+      this->x = res;
+    }
+  else
+    this->x = res;
+  this->y = rand() % 300;
 }
 
 MonsterFirstType::~MonsterFirstType(void)
@@ -29,18 +29,6 @@ int16_t			MonsterFirstType::getX(void)
 int16_t			MonsterFirstType::getY(void)
 {
   return y;
-}
-
-
-
-std::vector<int16_t>	MonsterFirstType::getXFires(void)
-{
-  return xFires;
-}
-
-std::vector<int16_t>	MonsterFirstType::getYFires(void)
-{
-  return yFires;
 }
 
 uint8_t			MonsterFirstType::getType(void)
@@ -60,48 +48,63 @@ uint8_t			MonsterFirstType::getHeight(void)
 
 uint8_t			MonsterFirstType::getLife(void)
 {
-	return life;
+  return life;
 }
 
 void			MonsterFirstType::setLife(uint8_t lif)
 {
-	life = lif;
+  life = lif;
 }
 
 void			MonsterFirstType::update(void)
 {
-	int16_t ValX = getX();
-	int16_t ValY = getY();
-	static int mode = 1;
+  int16_t ValX = getX();
+  int16_t ValY = getY();
+  static int mode = 1;
 
-	if(y == 0)
-		mode = 0;
-	if(y == 600)
-		mode = 1;
-	if(mode == 1)
-		ValY--;
-	if(mode == 0) 
-		ValY++;
-	ValX -= 10;
-	x = ValX;
-	y = ValY;
+  if (y <= 70)
+    mode = 0;
+  if (y >= 530)
+    mode = 1;
+  if (mode == 1)
+    ValY-=2;
+  if (mode == 0) 
+    ValY+=2;
+  ValX -= 1;
+  x = ValX;
+  y = ValY;
+}
+
+void			MonsterFirstType::update2(void)
+{
+
 }
 
 uint32_t		MonsterFirstType::getId(void)
 {
-	return id;
+  return id;
 }
 
 void			MonsterFirstType::setId(uint32_t _id)
 {
-	id = _id;
+  id = _id;
 }
 
 void			MonsterFirstType::ActFire()
-{}
+{ }
 
 void			MonsterFirstType::UpdateFire()
-{}
+{ }
+
+std::vector<_fires>     MonsterFirstType::getFires(void)
+{
+  return fires;
+}
+
+_fires                  MonsterFirstType::getFire(unsigned int j)
+{
+  return fires[j];
+}
 
 #define DECLDIR __declspec(dllexport)
 

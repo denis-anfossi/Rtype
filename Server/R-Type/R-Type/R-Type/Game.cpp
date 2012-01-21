@@ -186,7 +186,7 @@ int		Game::getId(void) const
 
 Player	*Game::getPlayer(int id) const
 {
-  AutoMutex	am(playersMutex);
+//AutoMutex am(playersMutex);
   if (id == 0)
     return player1;
   else if (id == 1)
