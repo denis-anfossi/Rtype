@@ -1,182 +1,191 @@
 #include "Player.hpp"
 
-Player::Player(const struct sockaddr_in _rcv): rcv(_rcv), idGame(-1), connect(true), x(0), y(0), alive(1)
+Player::Player(const struct sockaddr_in _rcv): rcv(_rcv), idGame(-1), connect(true), x(0), y(0), life(15)
 {
-	id.Id = RTProtocol::NO_PLAY;
+  id.Id = RTProtocol::NO_PLAY;
 
 #ifdef __linux__
-	idMutex = new UnixMutex();
-	idGameMutex = new UnixMutex();
-	connectMutex = new UnixMutex();
-	xMutex = new UnixMutex();
-	yMutex = new UnixMutex();
-	xFiresMutex = new UnixMutex();
-	yFiresMutex = new UnixMutex();
+  idMutex = new UnixMutex();
+  idGameMutex = new UnixMutex();
+  connectMutex = new UnixMutex();
+  xMutex = new UnixMutex();
+  yMutex = new UnixMutex();
+  firesMutex = new UnixMutex();
 #else
-	idMutex = new WinMutex();
-	idGameMutex = new WinMutex();
-	connectMutex = new WinMutex();
-	xMutex = new WinMutex();
-	yMutex = new WinMutex();
-	xFiresMutex = new WinMutex();
-	yFiresMutex = new WinMutex();
+  idMutex = new WinMutex();
+  idGameMutex = new WinMutex();
+  connectMutex = new WinMutex();
+  xMutex = new WinMutex();
+  yMutex = new WinMutex();
+  firesMutex = new WinMutex();
 #endif
 
-	idMutex->init();
-	idGameMutex->init();
-	connectMutex->init();
-	xMutex->init();
-	yMutex->init();
-	xFiresMutex->init();
-	yFiresMutex->init();
+  idMutex->init();
+  idGameMutex->init();
+  connectMutex->init();
+  xMutex->init();
+  yMutex->init();
+  firesMutex->init();
 }
 
 Player::~Player(void)
 { 
-	idMutex->destroy();
-	idGameMutex->destroy();
-	connectMutex->destroy();
-	xMutex->destroy();
-	yMutex->destroy();
-	xFiresMutex->destroy();
-	yFiresMutex->destroy();
+  idMutex->destroy();
+  idGameMutex->destroy();
+  connectMutex->destroy();
+  xMutex->destroy();
+  yMutex->destroy();
+  firesMutex->destroy();
 
-	delete	idMutex;
-	delete	idGameMutex;
-	delete	connectMutex;
-	delete	xMutex;
-	delete	yMutex;
-	delete	xFiresMutex;
-	delete	yFiresMutex;
+  delete	idMutex;
+  delete	idGameMutex;
+  delete	connectMutex;
+  delete	xMutex;
+  delete	yMutex;
+  delete	firesMutex;
 }
 
 void	Player::setId(int _id)
 {
-	AutoMutex	am(idMutex);
-	if (_id == 0)
-		id.Id = RTProtocol::PLAYER_1;
-	else if (_id == 1)
-		id.Id = RTProtocol::PLAYER_2;
-	else if (_id == 2)
-		id.Id = RTProtocol::PLAYER_3;
-	else if (_id == 3)
-		id.Id = RTProtocol::PLAYER_4;
+  AutoMutex	am(idMutex);
+  if (_id == 0)
+    id.Id = RTProtocol::PLAYER_1;
+  else if (_id == 1)
+    id.Id = RTProtocol::PLAYER_2;
+  else if (_id == 2)
+    id.Id = RTProtocol::PLAYER_3;
+  else if (_id == 3)
+    id.Id = RTProtocol::PLAYER_4;
 }
 
 void	Player::setId(RTProtocol::Identifier _id)
 {
-	AutoMutex	am(idMutex);
-	id = _id;
+  AutoMutex	am(idMutex);
+  id = _id;
 }
 
 const struct sockaddr_in	Player::getSockaddr(void) const
 {
-	return rcv;
+  return rcv;
 }
 
 RTProtocol::Identifier	Player::getId() const
 {
-	AutoMutex	am(idMutex);
-	return id;
+  AutoMutex	am(idMutex);
+  return id;
 }
 
 void	Player::setIdGame(int _idGame)
 {
-	AutoMutex	am(idGameMutex);
-	idGame = _idGame;
+  AutoMutex	am(idGameMutex);
+  idGame = _idGame;
 }
 
 int		Player::getIdGame(void) const
 {
-	AutoMutex	am(idGameMutex);
-	return idGame;
+  AutoMutex	am(idGameMutex);
+  return idGame;
 }
 
 void	Player::setConnect(bool _connect)
 {
-	AutoMutex	am(connectMutex);
-	connect = _connect;
+  AutoMutex	am(connectMutex);
+  connect = _connect;
 }
 
 bool	Player::getConnect(void) const
 {
-	AutoMutex	am(connectMutex);
-	return connect;
+  AutoMutex	am(connectMutex);
+  return connect;
 }
 
 void	Player::setX(int16_t _x)
 {
-	AutoMutex	am(xMutex);
-	x = _x;
+  AutoMutex	am(xMutex);
+  x = _x;
 }
 
 int16_t	Player::getX(void) const
 {
-	AutoMutex	am(xMutex);
-	return x;
+  AutoMutex	am(xMutex);
+  return x;
 }
 
 void	Player::setY(int16_t _y)
 {
-	AutoMutex	am(yMutex);
-	y = _y;
+  AutoMutex	am(yMutex);
+  y = _y;
 }
 
 int16_t	Player::getY(void) const
 {
-	AutoMutex	am(yMutex);
-	return y;
+  AutoMutex	am(yMutex);
+  return y;
 }
 
-std::vector<int16_t>	Player::getXFires(void) const
+void	Player::setLife(uint8_t	_life)
 {
-	AutoMutex	am(xFiresMutex);
-	return xFires;
+  life = _life;
 }
 
-std::vector<int16_t>	Player::getYFires(void) const
+uint8_t	Player::getLife(void) const
 {
-	AutoMutex	am(yFiresMutex);
-	return yFires;
+  return life;
 }
 
 void	Player::addFire(void)
 {
-	AutoMutex	am(xFiresMutex);
-	xFires.push_back(x - 1);
-	AutoMutex	am2(yFiresMutex);
-	yFires.push_back(y + 27);
+  struct timeval	now;
+  _fires		fire;
+  fire.x = x + 97;
+  fire.y = y + 27;
+  gettimeofday(&now, NULL);
+  fire.id = ((now.tv_sec % 10000) * 100000) + (now.tv_usec % 100000);
+  fire.alive = 1;
+  AutoMutex	am(firesMutex);
+  fires.push_back(fire);
 }
 
-void	Player::deleteFire(int16_t _x, int16_t _y)
+void	Player::deleteFire(unsigned int i)
 {
-	AutoMutex	am(xFiresMutex);
-	AutoMutex	am2(yFiresMutex);
-	for (unsigned int i = 0; i < xFires.size(); ++i)
-	{
-		if (xFires[i] == _x && yFires[i] == _y)
-		{
-			int j = 0;
-			for (std::vector<int16_t>::iterator it = xFires.begin(); it != xFires.end(); ++it)
-			{
-				if (j == i)
-				{
-					xFires.erase(it);
-					break;
-				}
-				++j;
-			}
-			j = 0;
-			for (std::vector<int16_t>::iterator it = yFires.begin(); it != yFires.end(); ++it)
-			{
-				if (j == i)
-				{
-					yFires.erase(it);
-					break;
-				}
-				++j;
-			}
-			break;
-		}
-	}
+  if (i < fires.size())
+    {
+      if (fires[i].alive > 0)
+	fires[i].alive = 0;
+      else
+	fires.erase(fires.begin()+i);
+    }
+}
+
+std::vector<_fires>	Player::getFires(void) const
+{
+  AutoMutex	am(firesMutex);
+  return fires;
+}
+
+_fires			Player::getFire(unsigned int j) const
+{
+  AutoMutex	am(firesMutex);
+  return fires[j];
+}
+
+void		Player::update(void)
+{
+  AutoMutex	am(firesMutex);
+  for (unsigned int i = 0; i < fires.size(); ++i)
+    {
+      fires[i].x += 4;
+      if (fires[i].x > 805 && fires[i].alive == 1)
+	fires[i].alive = 0;
+    }
+}
+
+void		Player::update2(void)
+{
+  AutoMutex	am(firesMutex);
+  for (unsigned int i = 0; i < fires.size(); ++i)
+    {
+      if (fires[i].alive == 0)
+	deleteFire(i);
+    }
 }

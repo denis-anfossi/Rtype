@@ -13,6 +13,7 @@ SRC 	= 	main.cpp		\
 		Player.cpp		\
 		Server.cpp		\
 		ThreadPool_.cpp		\
+		AutoMutex.cpp		\
 		$(SOCKET)UnixSocket.cpp	\
 		$(SOCKET)WinSocket.cpp	\
 		$(THREAD)UnixMutex.cpp	\

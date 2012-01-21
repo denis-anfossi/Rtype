@@ -8,50 +8,48 @@
 #endif
 #include	"AutoMutex.hpp"
 
-#include	<queue>
 #include	<deque>
-#include	<vector>
 
 struct	Task
 {
-	void	(*function)(void *);
-	void	*data;
+  void	(*function)(void *);
+  void	*data;
 };
 
 class ThreadPool_
 {
 private:
-	ThreadPool_(void);
-	~ThreadPool_(void);
+  ThreadPool_(void);
+  ~ThreadPool_(void);
 
 public:
-	bool	ThreadPoolInit(int nbThreads);
-	void	ThreadPoolDestroy();
-	void	TaskExec(Task *task);
-	bool	ThreadPush();
-	bool	ThreadPop();
-	void	QueuePush(void (*function)(void *), void *param);
-	Task	*QueuePop(Task *task);
-	bool	getTerminated();
-	void	setTerminated(bool _terminated);
+  bool	ThreadPoolInit(int nbThreads);
+  void	ThreadPoolDestroy(void);
+  void	TaskExec(Task *task);
+  bool	ThreadPush(void);
+  bool	ThreadPop(void);
+  void	QueuePush(void (*function)(void *), void *param);
+  Task	*QueuePop(void);
+  bool	getTerminated();
+  void	setTerminated(bool _terminated);
 
-	static ThreadPool_	*getInstance(void);
-	static void		kill(void);
+  static ThreadPool_	*getInstance(void);
+  static void		kill(void);
 
 private:
 public:
-	IMutex	*ThreadQueueMutex;
-	IMutex	*TaskQueueMutex;
-	IMutex	*TerminatedMutex;
+  IMutex	*ThreadQueueMutex;
+  IMutex	*TaskQueueMutex;
+  IMutex	*TerminatedMutex;
 
-	std::deque<Task *>	TaskQueue;
-	std::deque<IThread *>	ThreadQueue;
-	bool	Terminated;
+  std::deque<Task *>	TaskQueue;
+  std::deque<IThread *>	ThreadQueue;
+  bool	Terminated;
 
-//	static IMutex *_singletonMutex;
-	static ThreadPool_	*_singleton;
+  //	static IMutex *_singletonMutex;
+  static ThreadPool_	*_singleton;
 };
 
-	void	*ThreadPoolRoutine(void *param);
+void	*ThreadPoolRoutine(void *param);
 
 #endif		/* THREAD_POOL_HPP */

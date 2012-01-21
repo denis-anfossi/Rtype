@@ -11,7 +11,6 @@ LinuxDynLib::~LinuxDynLib()
 void* LinuxDynLib::openLib(std::string libName)
 {
   HandleOpen = dlopen(libName.c_str(), RTLD_LAZY);
-
   return HandleOpen;
 }
 

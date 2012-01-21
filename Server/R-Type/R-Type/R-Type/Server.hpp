@@ -28,49 +28,52 @@ class	Game;
 class	Server
 {
 public:
-	void	init(void);
-	void	running(void);
+  void			init(void);
+  void			running(void);
 
-	void	addNewPlayer(const struct sockaddr_in rcv);
-	void	addNewGame(Player *p, int id);
-	IDynLib	*getSharedLibMonsterFirstType(void) const;
-	IDynLib	*getSharedLibMonsterSecondType(void) const;
-	Player	*getPlayer(const struct sockaddr_in rcv) const;
-	Player	*getPlayer(const unsigned int it) const;
-	std::vector<Player *>	getPlayers(void) const;
-	Game	*getGame(unsigned int i) const;
-	Game	*getGame(const Player *p) const;
-	std::vector<Game *>		getGames(void) const;
-	int		getAvailableId(void) const;
-	Game	*getAvailableSlot(void) const;
-	ISocket	*getSocket(void) const;
-	void	deletePlayer(const Player *p);
-	void	deleteGame(const Game *g);
+  void			addNewPlayer(const struct sockaddr_in rcv);
+  void			addNewGame(Player *p, int id);
+  IDynLib		*getSharedLibMonsterFirstType(void) const;
+  IDynLib		*getSharedLibMonsterSecondType(void) const;
+  IDynLib               *getSharedLibMonsterBoss(void) const;
+  Player		*getPlayer(const struct sockaddr_in rcv) const;
+  Player		*getPlayer(const unsigned int it) const;
+  std::vector<Player *>	getPlayers(void) const;
+  Game			*getGame(unsigned int i) const;
+  Game			*getGame(const Player *p) const;
+  std::vector<Game *>	getGames(void) const;
+  int			getAvailableId(void) const;
+  Game			*getAvailableSlot(void) const;
+  ISocket		*getSocket(void) const;
+  void			deletePlayer(const Player *p);
+  void			deleteGame(const Game *g);
 
-	static void		checkConnectionClients(void *param);
-	static void		sendUpdateClients(void *param);
+  static void		checkConnectionClients(void *param);
+  static void		sendUpdateClients(void *param);
 
-	static Server	*getInstance(void);
-	static void		kill(void);
+  static Server		*getInstance(void);
+  static void		kill(void);
 
-	IMutex		*threadPoolMutex;
-	IMutex		*socketMutex;
-	IMutex		*sharedMonsterFirstTypeMutex;
-	IMutex		*sharedMonsterSecondTypeMutex;
-	IMutex		*playersMutex;
-	IMutex		*gamesMutex;
+  IMutex		*threadPoolMutex;
+  IMutex		*socketMutex;
+  IMutex		*sharedMonsterFirstTypeMutex;
+  IMutex		*sharedMonsterSecondTypeMutex;
+  IMutex                *sharedMonsterBossMutex;
+  IMutex		*playersMutex;
+  IMutex		*gamesMutex;
 private:
-	Server(void);
-	~Server(void);
+  Server(void);
+  ~Server(void);
 
-	static Server	*_singleton;
+  static Server	*_singleton;
 
-	ThreadPool_	*threadPool;
-	ISocket		*socket;
-	IDynLib		*sharedLibMonsterFirstType;
-	IDynLib		*sharedLibMonsterSecondType;
-	std::vector<Player *>	players;
-	std::vector<Game *>		games;
+  ThreadPool_	*threadPool;
+  ISocket		*socket;
+  IDynLib		*sharedLibMonsterFirstType;
+  IDynLib		*sharedLibMonsterSecondType;
+  IDynLib               *sharedLibMonsterBoss;
+  std::vector<Player *>	players;
+  std::vector<Game *>		games;
 };
 
 #ifndef __linux__

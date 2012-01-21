@@ -27,113 +27,115 @@ ThreadPool_::~ThreadPool_(void)
 
 bool	ThreadPool_::ThreadPoolInit(int nbThreads)
 {
-	Terminated = false;
+  Terminated = false;
 #ifdef __linux__
-	ThreadQueueMutex = new UnixMutex();
-	TaskQueueMutex = new UnixMutex();
-	TerminatedMutex = new UnixMutex();
-	for (int i = 0; i < nbThreads; ++i)
-		ThreadQueue.push_back(new UnixThread());
+  ThreadQueueMutex = new UnixMutex();
+  TaskQueueMutex = new UnixMutex();
+  TerminatedMutex = new UnixMutex();
+  for (int i = 0; i < nbThreads; ++i)
+    ThreadQueue.push_back(new UnixThread());
 #else
-	ThreadQueueMutex = new WinMutex();
-	TaskQueueMutex = new WinMutex();
-	TerminatedMutex = new WinMutex();
-	for (int i = 0; i < nbThreads; ++i)
-		ThreadQueue.push_back(new WinThread());
+  ThreadQueueMutex = new WinMutex();
+  TaskQueueMutex = new WinMutex();
+  TerminatedMutex = new WinMutex();
+  for (int i = 0; i < nbThreads; ++i)
+    ThreadQueue.push_back(new WinThread());
 #endif
 
-	ThreadQueueMutex->init();
-	TaskQueueMutex->init();
-	TerminatedMutex->init();
-	for (int i = 0; i < nbThreads; ++i)
-		ThreadQueue[i]->create(ThreadPoolRoutine, NULL);
-	return true;
+  ThreadQueueMutex->init();
+  TaskQueueMutex->init();
+  TerminatedMutex->init();
+  for (int i = 0; i < nbThreads; ++i)
+    ThreadQueue[i]->create(ThreadPoolRoutine, NULL);
+  return true;
 }
 
 void	ThreadPool_::ThreadPoolDestroy()
 {
-	TerminatedMutex->lock();
-	Terminated = true;
-	TerminatedMutex->unlock();
-	for (unsigned int i = 0; i < ThreadQueue.size(); ++i)
-		ThreadQueue[i]->join();
-	ThreadQueueMutex->lock();
-	for (unsigned int i = 0; i < ThreadQueue.size(); ++i)
-		delete ThreadQueue[i];
-	ThreadQueueMutex->unlock();
-	ThreadQueueMutex->destroy();
-	TaskQueueMutex->destroy();
-	TerminatedMutex->destroy();
-	delete ThreadQueueMutex;
-	delete TaskQueueMutex;
-	delete TerminatedMutex;
+  TerminatedMutex->lock();
+  Terminated = true;
+  TerminatedMutex->unlock();
+  for (unsigned int i = 0; i < ThreadQueue.size(); ++i)
+    ThreadQueue[i]->join();
+  ThreadQueueMutex->lock();
+  for (unsigned int i = 0; i < ThreadQueue.size(); ++i)
+    delete ThreadQueue[i];
+  ThreadQueueMutex->unlock();
+  ThreadQueueMutex->destroy();
+  TaskQueueMutex->destroy();
+  TerminatedMutex->destroy();
+  delete ThreadQueueMutex;
+  delete TaskQueueMutex;
+  delete TerminatedMutex;
 }
 
 void	ThreadPool_::TaskExec(Task *task)
 {
-//	AutoMutex	am(TaskQueueMutex);
-	task->function(task->data);
+  //  AutoMutex	am(TaskQueueMutex);
+  task->function(task->data);
 }
 
 bool	ThreadPool_::ThreadPush()
 {
-//	AutoMutex	am(ThreadQueueMutex);
-	return true;
+  //	AutoMutex	am(ThreadQueueMutex);
+  return true;
 }
 
 bool	ThreadPool_::ThreadPop()
 {
-//	AutoMutex	am(ThreadQueueMutex);
-	return true;
+  //	AutoMutex	am(ThreadQueueMutex);
+  return true;
 }
 
 void	ThreadPool_::QueuePush(void (*function)(void *), void *param)
 {
-	Task *task = new Task();
-	task->function = function;
-	task->data = param;
-	AutoMutex	am(TaskQueueMutex);
-	TaskQueue.push_back(task);
+  Task *task = new Task();
+  task->function = function;
+  task->data = param;
+  AutoMutex	am(TaskQueueMutex);
+  TaskQueue.push_back(task);
 }
 
-Task	*ThreadPool_::QueuePop(Task *task)
+Task	*ThreadPool_::QueuePop()
 {
-	TaskQueueMutex->lock();
-	while (TaskQueue.empty())
+  TaskQueueMutex->lock();
+  while (TaskQueue.empty())
+    {
+      TaskQueueMutex->unlock();
+      TerminatedMutex->lock();
+      if (Terminated)
 	{
-		TaskQueueMutex->unlock();
-		TerminatedMutex->lock();
-		if (Terminated)
-		{
-			TerminatedMutex->unlock();
-			return NULL;
-		}
-		TerminatedMutex->unlock();
-		TaskQueueMutex->lock();
+	  TerminatedMutex->unlock();
+	  return NULL;
 	}
-	Task *task_ = TaskQueue.front();
-	TaskQueue.pop_front();
-	TaskQueueMutex->unlock();
-	return task_;
+      TerminatedMutex->unlock();
+      TaskQueueMutex->lock();
+    }
+  Task *task_ = TaskQueue.front();
+  TaskQueue.pop_front();
+  TaskQueueMutex->unlock();
+  return task_;
 }
 
 bool	ThreadPool_::getTerminated()
 {
-//	AutoMutex	am(TerminatedMutex);
-	return Terminated;
+  //	AutoMutex	am(TerminatedMutex);
+  return Terminated;
 }
 
 void	ThreadPool_::setTerminated(bool _terminated)
 {
-//	AutoMutex	am(TerminatedMutex);
-	Terminated = _terminated;
+  //	AutoMutex	am(TerminatedMutex);
+  Terminated = _terminated;
 }
 
 void	*ThreadPoolRoutine(void *param)
 {
-	ThreadPool_ *t = ThreadPool_::getInstance();
-	Task *task;
-	while ((task = t->QueuePop(NULL)) != NULL)
-		t->TaskExec(task);
-	return NULL;
+  (void)param;
+
+  ThreadPool_ *t = ThreadPool_::getInstance();
+  Task *task;
+  while ((task = t->QueuePop()) != NULL)
+      t->TaskExec(task);
+  return NULL;
 }
